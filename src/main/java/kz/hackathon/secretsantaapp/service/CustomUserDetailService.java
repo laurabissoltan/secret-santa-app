@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService {
+public class CustomUserDetailService implements UserDetailsService{
 
     private final UserRepository repository;
 
@@ -66,6 +67,10 @@ public class CustomUserDetailService {
     private JavaMailSender mailSender;
 
     public void createPasswordResetTokenForUser(final User user) {
+        /*passwordResetTokenRepository.findByUser(user).ifPresent(token ->
+                passwordResetTokenRepository.delete(token)
+        );*/
+
         final String token = UUID.randomUUID().toString();
         final PasswordResetToken myToken = new PasswordResetToken();
         myToken.setUser(user);
@@ -85,4 +90,9 @@ public class CustomUserDetailService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+    }
 }

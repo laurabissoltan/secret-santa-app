@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class User extends BaseEntityAudit implements UserDetails {
   //  private Role role;
     @Builder.Default
     private Role role = Role.ROLE_PARTICIPANT;
+
+    @Column(name = "last_password_reset_date")
+    private LocalDateTime lastPasswordResetDate;
 
 /*    @Column(name = "time_zone")
     private String timeZone; // Field for storing the user's time zone
