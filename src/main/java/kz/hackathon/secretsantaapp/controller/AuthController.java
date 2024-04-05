@@ -1,10 +1,12 @@
 package kz.hackathon.secretsantaapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kz.hackathon.secretsantaapp.dto.registration.AuthenticationRequest;
 import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
+import kz.hackathon.secretsantaapp.dto.registration.RefreshTokenRequest;
 import kz.hackathon.secretsantaapp.dto.registration.RegisterRequest;
 import kz.hackathon.secretsantaapp.dto.resetPassword.ResetPasswordRequest;
 import kz.hackathon.secretsantaapp.model.PasswordResetToken;
@@ -12,9 +14,11 @@ import kz.hackathon.secretsantaapp.model.User;
 import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
 import kz.hackathon.secretsantaapp.service.AuthenticationService;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
+import kz.hackathon.secretsantaapp.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,8 +27,16 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @Tag(name="Authentication controller")
+@SecurityRequirement(name = "bearerAuth")
 public class AuthController {
+    @Autowired
     private final AuthenticationService authenticationService;
+
+    @Autowired
+    private CustomUserDetailService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {
@@ -50,13 +62,6 @@ public class AuthController {
         // return ResponseEntity.ok(authenticationService.signIn(request));
     }
 
-
-    @Autowired
-    private CustomUserDetailService userService;
-
-    @Autowired
-    private PasswordResetTokenRepository tokenRepository;
-
     @PostMapping("/forgot-password")
     public String requestResetPassword(@RequestParam("email") String userEmail) {
         User user = userService.getByUsername(userEmail);
@@ -79,20 +84,14 @@ public class AuthController {
         }
     }
 
-/*
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) {
-        try {
-            JwtAuthenticationResponse jwtResponse = authenticationService.resetPassword(token, newPassword);
-            return ResponseEntity.ok(jwtResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An error occurred while resetting the password.");
-        }
-    }
-*/
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        String requestRefreshToken = refreshTokenRequest.getRefreshToken();
 
-   // @PostMapping("/account-settings")
+        UserDetails userDetails = userService.loadUserByUsername(jwtService.extractUserName(requestRefreshToken));
+        String accessToken = jwtService.generateToken(userDetails);
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(accessToken, refreshToken));
+    }
 
 }
