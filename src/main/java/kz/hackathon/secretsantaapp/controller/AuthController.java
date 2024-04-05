@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @Tag(name="Authentication controller")
-@SecurityRequirement(name = "bearerAuth")
+//@SecurityRequirement(name = "bearerAuth")
 public class AuthController {
     @Autowired
     private final AuthenticationService authenticationService;
