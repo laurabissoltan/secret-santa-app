@@ -26,7 +26,7 @@ public class CustomUserDetailService implements UserDetailsService{
 
     public User create(User user) {
         if (repository.existsByEmail(user.getUsername())) {
-            throw new RuntimeException("username exists already");
+            throw new RuntimeException("Username exists already");
         }
 
         return repository.save(user);

@@ -29,7 +29,14 @@ import java.time.LocalDateTime;
 @Tag(name="Authentication controller")
 @SecurityRequirement(name = "bearerAuth")
 public class AuthController {
+    @Autowired
     private final AuthenticationService authenticationService;
+
+    @Autowired
+    private CustomUserDetailService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {
@@ -54,16 +61,6 @@ public class AuthController {
 
         // return ResponseEntity.ok(authenticationService.signIn(request));
     }
-
-
-    @Autowired
-    private CustomUserDetailService userService;
-
-    @Autowired
-    private PasswordResetTokenRepository tokenRepository;
-
-    @Autowired
-    private JwtService jwtService;
 
     @PostMapping("/forgot-password")
     public String requestResetPassword(@RequestParam("email") String userEmail) {
