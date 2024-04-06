@@ -3,8 +3,14 @@ package kz.hackathon.secretsantaapp;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.user.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @SpringBootApplication
 @SecurityScheme(
