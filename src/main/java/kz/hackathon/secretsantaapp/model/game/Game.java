@@ -32,6 +32,8 @@ public class Game extends BaseEntityAudit {
     @JoinColumn(name = "created_id", referencedColumnName = "id")
     private User creator;
 
+    private Currency currency;
+
     @ManyToMany
     @JoinTable(
             name = "game_participants",
