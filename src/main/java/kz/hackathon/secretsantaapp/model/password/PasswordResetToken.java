@@ -1,6 +1,7 @@
-package kz.hackathon.secretsantaapp.model;
+package kz.hackathon.secretsantaapp.model.password;
 
 import jakarta.persistence.*;
+import kz.hackathon.secretsantaapp.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 

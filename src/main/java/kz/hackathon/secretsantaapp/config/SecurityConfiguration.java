@@ -1,6 +1,5 @@
 package kz.hackathon.secretsantaapp.config;
 
-import kz.hackathon.secretsantaapp.model.Role;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +44,7 @@ public class SecurityConfiguration {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/games/**","/settings/**","/invitations/**" ).permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/h2-console/**").permitAll()
                        // .requestMatchers("/accounts/**").hasAuthority(Role.ROLE_ORGANISER.name())
                         .anyRequest().authenticated())

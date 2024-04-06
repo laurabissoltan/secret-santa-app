@@ -1,6 +1,6 @@
 package kz.hackathon.secretsantaapp.repository;
 
-import kz.hackathon.secretsantaapp.model.User;
+import kz.hackathon.secretsantaapp.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

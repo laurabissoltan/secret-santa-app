@@ -1,8 +1,8 @@
 package kz.hackathon.secretsantaapp.service;
 
-import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
-import kz.hackathon.secretsantaapp.model.PasswordResetToken;
-import kz.hackathon.secretsantaapp.model.User;
+import jakarta.persistence.EntityNotFoundException;
+import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
+import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
 import kz.hackathon.secretsantaapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,15 @@ public class CustomUserDetailService implements UserDetailsService{
 
     private final UserRepository repository;
 
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
     public User create(User user) {
         if (repository.existsByEmail(user.getUsername())) {
-            throw new RuntimeException("Username exists already");
+            throw new RuntimeException("Email exists already");
         }
 
         return repository.save(user);
@@ -41,6 +47,7 @@ public class CustomUserDetailService implements UserDetailsService{
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     }
+
 
     public UserDetailsService userDetailsService(){
         return this::getByUsername;
@@ -58,18 +65,7 @@ public class CustomUserDetailService implements UserDetailsService{
         return String.valueOf(user.getId()).equals(ownerId);
     }
 
-    //////////reset
-
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
     public void createPasswordResetTokenForUser(final User user) {
-        /*passwordResetTokenRepository.findByUser(user).ifPresent(token ->
-                passwordResetTokenRepository.delete(token)
-        );*/
 
         final String token = UUID.randomUUID().toString();
         final PasswordResetToken myToken = new PasswordResetToken();
