@@ -1,6 +1,5 @@
 package kz.hackathon.secretsantaapp.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -9,9 +8,7 @@ import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
 import kz.hackathon.secretsantaapp.dto.registration.RefreshTokenRequest;
 import kz.hackathon.secretsantaapp.dto.registration.RegisterRequest;
 import kz.hackathon.secretsantaapp.dto.resetPassword.ResetPasswordRequest;
-import kz.hackathon.secretsantaapp.model.PasswordResetToken;
-import kz.hackathon.secretsantaapp.model.User;
-import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
+import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.AuthenticationService;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.JwtService;
@@ -21,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@Tag(name="Authentication controller")
-//@SecurityRequirement(name = "bearerAuth")
+@Tag(name="authentication-controller")
+@SecurityRequirement(name = "bearerAuth")
 public class AuthController {
     @Autowired
     private final AuthenticationService authenticationService;
@@ -40,7 +35,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {
-      //  return ResponseEntity.ok(authenticationService.signUp(request));
         try {
             var response = authenticationService.signUp(request);
             return ResponseEntity.ok().body(response);
@@ -58,8 +52,6 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        // return ResponseEntity.ok(authenticationService.signIn(request));
     }
 
     @PostMapping("/forgot-password")

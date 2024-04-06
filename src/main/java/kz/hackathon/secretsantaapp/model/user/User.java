@@ -1,4 +1,4 @@
-package kz.hackathon.secretsantaapp.model;
+package kz.hackathon.secretsantaapp.model.user;
 
 import jakarta.persistence.*;
 import kz.hackathon.secretsantaapp.model.base.BaseEntityAudit;
@@ -20,6 +20,9 @@ import java.util.List;
 @Table(name="_user")
 public class User extends BaseEntityAudit implements UserDetails {
 
+    @Column(name="login", unique = true, nullable = false)
+    private String login;
+
     @Column(name="email", unique = true, nullable = false)
     private String email;
 
@@ -35,19 +38,11 @@ public class User extends BaseEntityAudit implements UserDetails {
     @Column(name = "last_password_reset_date")
     private LocalDateTime lastPasswordResetDate;
 
-/*    @Column(name = "time_zone")
-    private String timeZone; // Field for storing the user's time zone
-
-    @Column(name = "avatar")
-    private String avatar;
-*/
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "active")
-    private boolean active;
-
-
+    @Column(name = "profile_picture")
+    private String profilePictureURL;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
