@@ -25,4 +25,6 @@ public class Invitation {
     private String email;
     private String invitationCode;
     private InvitationStatus status;
+
+    private boolean groupInvitation = false;
 }

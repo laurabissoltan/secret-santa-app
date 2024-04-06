@@ -44,7 +44,7 @@ public class GameService {
         return gameRepository.findByCreatorId(creatorId);
     }
 
-    public void addParticipantToGame(UUID gameId, UUID userId) {
+/*    public void addParticipantToGame(UUID gameId, UUID userId) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game not found"));
         User user = userRepository.findById(userId)
@@ -52,7 +52,7 @@ public class GameService {
 
         game.getParticipants().add(user);
         gameRepository.save(game);
-    }
+    }*/
 
 
 }

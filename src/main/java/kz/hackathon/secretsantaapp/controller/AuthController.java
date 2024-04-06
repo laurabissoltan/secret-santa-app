@@ -14,6 +14,7 @@ import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,8 @@ public class AuthController {
         try {
             var response = authenticationService.signUp(request);
             return ResponseEntity.ok().body(response);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("The login provided is already in use. Please choose another one.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
