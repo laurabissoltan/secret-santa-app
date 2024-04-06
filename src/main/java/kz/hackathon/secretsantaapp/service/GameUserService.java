@@ -49,7 +49,7 @@ public class GameUserService {
     }
 
     public GameUser getGameUserByGameIdAndUserId(UUID gameId, UUID userId){
-        return gameUserRepository.findByGameIdAndUserId(gameId, userId);
+        return gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
     }
 
     public void reshuffle(UUID gameId){
@@ -79,8 +79,12 @@ public class GameUserService {
         }
 
         for (int i = 0; i < gameUsers.size(); i++) {
-            gameUsers.get(i).setMentee(userList.get(i));
+            gameUsers.get(i).setGiftee(userList.get(i));
         }
         gameUserRepository.saveAll(gameUsers);
+    }
+
+    public boolean isParticipant(UUID gameId, UUID userId) {
+        return gameUserRepository.findByGameIdAndUserId(gameId, userId).isPresent();
     }
 }

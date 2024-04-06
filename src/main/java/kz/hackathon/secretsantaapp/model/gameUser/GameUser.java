@@ -28,8 +28,8 @@ public class GameUser {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentee_id", referencedColumnName = "id")
-    private User mentee;
+    @JoinColumn(name = "giftee_id", referencedColumnName = "id")
+    private User giftee;
 
     private Status status;
     private String feedback;

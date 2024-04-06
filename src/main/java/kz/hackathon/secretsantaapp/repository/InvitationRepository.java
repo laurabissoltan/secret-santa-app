@@ -20,4 +20,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
 
     Optional<Invitation> findByGameIdAndEmail(UUID gameId, String email);
 
+    Optional<Invitation> findByGameIdAndGroupInvitationTrue(UUID gameId);
+
 }

@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -59,7 +60,7 @@ public class JwtService {
         extraClaims.put("type", "ACCESS");
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) //30 min
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30)) //30 days
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -70,7 +71,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 1 day
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 90)) // 90 days
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -84,16 +85,16 @@ public class JwtService {
             return false; // Invalid token or type mismatch
         }
     }
-public boolean isTokenValid(String token, UserDetails userDetails) {
-    final String username = extractUserName(token);
-    final User user = (User) userDetails;
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUserName(token);
+        final User user = (User) userDetails;
 
-    Date tokenIssuedAt = extractIssuedAt(token);
-    boolean issuedAfterLastReset = user.getLastPasswordResetDate() == null ||
-            tokenIssuedAt.after(Timestamp.valueOf(user.getLastPasswordResetDate()));
+        Date tokenIssuedAt = extractIssuedAt(token);
+        boolean issuedAfterLastReset = user.getLastPasswordResetDate() == null ||
+                tokenIssuedAt.after(Timestamp.valueOf(user.getLastPasswordResetDate()));
 
-    return username.equals(user.getUsername()) && !isTokenExpired(token) && issuedAfterLastReset;
-}
+        return username.equals(user.getUsername()) && !isTokenExpired(token) && issuedAfterLastReset;
+    }
 
     private Date extractIssuedAt(String token) {
         return extractClaim(token, Claims::getIssuedAt);
@@ -106,6 +107,5 @@ public boolean isTokenValid(String token, UserDetails userDetails) {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
 
 }

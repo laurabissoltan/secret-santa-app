@@ -2,6 +2,8 @@ package kz.hackathon.secretsantaapp.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import kz.hackathon.secretsantaapp.dto.accountSettings.ChangePasswordRequest;
 import kz.hackathon.secretsantaapp.dto.accountSettings.UpdateLoginEmailRequest;
 import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
