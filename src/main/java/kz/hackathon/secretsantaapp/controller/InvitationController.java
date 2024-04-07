@@ -7,6 +7,7 @@ import kz.hackathon.secretsantaapp.dto.invitation.InvitationLinkResponse;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationRequest;
 import kz.hackathon.secretsantaapp.model.invitation.Invitation;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
+import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.InvitationRepository;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
@@ -45,7 +46,8 @@ public class InvitationController {
 
     @PostMapping("/accept")
     public ResponseEntity<?> acceptIndividualInvitation(@RequestParam("code") String invitationCode) {
-        UUID userId = customUserDetailService.getCurrentUser().getId();
+        User user = customUserDetailService.getCurrentUser();
+        UUID userId = user.getId();
         Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found."));
 
@@ -53,7 +55,7 @@ public class InvitationController {
             return new ResponseEntity<>("You are already a participant in this game.", HttpStatus.BAD_REQUEST);
         }
 
-        gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(userId)));
+        gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(user.getEmail())));
         invitationRepository.save(invitation);
 
         return new ResponseEntity<>(HttpStatus.OK);

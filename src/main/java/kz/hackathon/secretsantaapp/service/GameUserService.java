@@ -3,12 +3,15 @@ package kz.hackathon.secretsantaapp.service;
 import jakarta.persistence.EntityNotFoundException;
 import kz.hackathon.secretsantaapp.model.game.Game;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.GameRepository;
 import kz.hackathon.secretsantaapp.repository.GameUserRepository;
 import kz.hackathon.secretsantaapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,18 +29,22 @@ public class GameUserService {
     @Autowired
     private GameRepository gameRepository;
 
-    public List<GameUser> createGameUser(UUID gameId, List<UUID> usersId) {
+    @Autowired
+    private EmailService emailService;
+
+    public List<GameUser> createGameUser(UUID gameId, List<String> emails) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game not found with ID: " + gameId));
 
         List<GameUser> gameUserList = new ArrayList<>();
 
-        usersId.forEach(userId->{
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+        emails.forEach(email->{
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
             GameUser gameUser = new GameUser();
             gameUser.setUser(user);
             gameUser.setGame(game);
+            gameUser.setInvitationStatus(InvitationStatus.PENDING);
             gameUserList.add(gameUser);
         });
 
@@ -48,12 +55,16 @@ public class GameUserService {
         return gameUserRepository.findByGameId(gameId);
     }
 
+    public List<GameUser> getGamesUserByGameIdAndInvitationStatus(UUID gameId, InvitationStatus invitationStatus){
+        return gameUserRepository.findByGameIdAndInvitationStatus(gameId, invitationStatus);
+    }
+
     public GameUser getGameUserByGameIdAndUserId(UUID gameId, UUID userId){
         return gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
     }
 
     public void reshuffle(UUID gameId){
-        List<GameUser> gameUsers = getGamesUserByGameId(gameId);
+        List<GameUser> gameUsers = getGamesUserByGameIdAndInvitationStatus(gameId, InvitationStatus.ACCEPTED);
 
         List<User> users = new ArrayList<>();
 
@@ -82,6 +93,9 @@ public class GameUserService {
             gameUsers.get(i).setGiftee(userList.get(i));
         }
         gameUserRepository.saveAll(gameUsers);
+
+        List<GameUser> gameUsersPending = getGamesUserByGameIdAndInvitationStatus(gameId, InvitationStatus.PENDING);
+        gameUserRepository.deleteAll(gameUsersPending);
     }
 
     public boolean isParticipant(UUID gameId, UUID userId) {
@@ -90,5 +104,31 @@ public class GameUserService {
 
     public int getParticipantCountByGameId(UUID gameId) {
         return gameUserRepository.countByGameId(gameId);
+    }
+
+    public GameUser updateGameUser(UUID gameId, UUID userId,
+                                   String userName, String email, String phoneNumber){
+        GameUser gameUser = gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
+        assert gameUser != null;
+        gameUser.setUserName(userName);
+        gameUser.setEmail(email);
+        gameUser.setPhoneNumber(phoneNumber);
+        return gameUserRepository.save(gameUser);
+    }
+
+    public GameUser updateGameUserStatusAccepted(UUID gameId, UUID userId){
+        GameUser gameUser = gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
+        assert gameUser != null;
+        gameUser.setInvitationStatus(InvitationStatus.ACCEPTED);
+        return gameUserRepository.save(gameUser);
+    }
+
+    public void sendEmailOrganizer(UUID gameId, UUID userId){
+        Game game =  gameRepository.findById(gameId)
+                .orElseThrow(() -> new EntityNotFoundException("Game not found with gameId: " + gameId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with userId: " + userId));
+        String content = user.getEmail() + " хочет связаться с вами";
+        emailService.sendEmail(game.getCreator().getEmail(), game.getName(), content);
     }
 }

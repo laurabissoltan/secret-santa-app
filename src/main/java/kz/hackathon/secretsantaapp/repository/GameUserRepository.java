@@ -1,6 +1,7 @@
 package kz.hackathon.secretsantaapp.repository;
 
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public interface GameUserRepository extends JpaRepository<GameUser, UUID> {
 
     int countByGameId(UUID gameId);
 
+    List<GameUser> findByGameIdAndInvitationStatus(UUID gameId, InvitationStatus invitationStatus);
 }

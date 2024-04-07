@@ -2,6 +2,7 @@ package kz.hackathon.secretsantaapp.model.gameUser;
 
 import jakarta.persistence.*;
 import kz.hackathon.secretsantaapp.model.game.Game;
+import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import kz.hackathon.secretsantaapp.model.user.User;
 import lombok.*;
 
@@ -33,4 +34,8 @@ public class GameUser {
 
     private Status status;
     private String feedback;
+    private InvitationStatus invitationStatus;
+    private String userName;
+    private String email;
+    private String phoneNumber;
 }

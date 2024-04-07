@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.ValidationException;
 import kz.hackathon.secretsantaapp.dto.wshlist.WishlistResponse;
 import kz.hackathon.secretsantaapp.model.wishlist.Wishlist;
+import kz.hackathon.secretsantaapp.service.GameUserService;
 import kz.hackathon.secretsantaapp.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,15 +24,19 @@ public class WishlistController {
     @Autowired
     private WishlistService wishlistService;
 
+    @Autowired
+    private GameUserService gameUserService;
+
     
     //request body, path variable
     @PostMapping("/{gameId}/{userId}")
     public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @PathVariable UUID userId, @RequestBody List<String> descriptions) {
         wishlistService.createWishlist(gameId, userId, descriptions);
+        gameUserService.updateGameUserStatusAccepted(gameId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/forme")
+    @PostMapping("/giftlist")
     public ResponseEntity<List<WishlistResponse>> getWishlist(@PathVariable UUID gameId, @PathVariable UUID userId) {
         List<Wishlist> wishlists = wishlistService.getWishlistByGameIdAndUserId(gameId, userId);
         List<WishlistResponse> wishlistResponses = new ArrayList<>();

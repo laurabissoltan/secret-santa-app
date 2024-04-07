@@ -62,7 +62,7 @@ public class GameController {
         //CREATOR IS NOT PARTICIPIANT UNTIL CLICKS OWN CARD
         Game newGame = gameService.createGame(game, currentUser.getId());
 
-        gameUserService.createGameUser(newGame.getId(), Collections.singletonList(currentUser.getId()));
+        gameUserService.createGameUser(newGame.getId(), Collections.singletonList(currentUser.getEmail()));
 
         GameResponse response = new GameResponse(
                 newGame.getId(),
