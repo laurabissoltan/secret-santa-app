@@ -41,7 +41,7 @@ public class InvitationController {
     public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) {
         List<String> emails = invitationRequests.stream().map(InvitationRequest::getEmail).collect(Collectors.toList());
         invitationService.sendInvitations(gameId, emails);
-        return ResponseEntity.ok("Invitations sent.");
+        return ResponseEntity.ok("Приглашения были отправлены по почте");
     }
 
     @Operation(summary = "принятие ссылки, добавляется в базу gameuser, но не может участвовать пока не заполнит контактные данные и вишлист")
@@ -50,10 +50,10 @@ public class InvitationController {
         User user = customUserDetailService.getCurrentUser();
         UUID userId = user.getId();
         Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Приглашение не найдено."));
 
         if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
-            return new ResponseEntity<>("You are already a participant in this game.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Вы уже являетесь участников игры.", HttpStatus.BAD_REQUEST);
         }
 
         gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(user.getEmail())));

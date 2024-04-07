@@ -43,7 +43,7 @@ public class GameController {
         User currentUser = customUserDetailService.getCurrentUser();
 
         if (request.getPriceLimitChecked() && request.getMaxPrice() == null) {
-            result.addError(new FieldError("createGameRequest", "maxPrice", "Price is required when the price limit is checked."));
+            result.addError(new FieldError("createGameRequest", "maxPrice", "Надо указать максимальную стоимость подарка"));
         }
 
         if (result.hasErrors()) {
@@ -101,9 +101,9 @@ public class GameController {
     public ResponseEntity<?> reshuffleParticipants(@PathVariable UUID gameId) {
         try {
             gameUserService.reshuffle(gameId);
-            return ResponseEntity.ok("Participants reshuffled successfully.");
+            return ResponseEntity.ok("Жеребьевка завершена");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error reshuffling participants: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка во время жеребьевки: " + e.getMessage());
         }
     }
 
