@@ -22,8 +22,8 @@ public class Game extends BaseEntityAudit {
     @Column(name="name", nullable = false)
     private String name;
 
-/*    @Column(name="unique_identifier", nullable = false, unique = true)
-    private String uniqueIdentifier = UUID.randomUUID().toString();*/
+    @Column(name="unique_identifier", nullable = false, unique = true)
+    private String uniqueIdentifier;
 
     @Column(name="max_price")
     private Integer maxPrice;

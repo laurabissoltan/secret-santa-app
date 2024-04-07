@@ -1,12 +1,11 @@
 package kz.hackathon.secretsantaapp.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import kz.hackathon.secretsantaapp.dto.invitation.InvitationDetails;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationLinkResponse;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationRequest;
 import kz.hackathon.secretsantaapp.model.invitation.Invitation;
-import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.InvitationRepository;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
@@ -37,6 +36,7 @@ public class InvitationController {
     @Autowired
     private GameUserService gameUserService;
 
+    @Operation(summary = "отправка ссылку на игру по почте")
     @PostMapping("/send")
     public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) {
         List<String> emails = invitationRequests.stream().map(InvitationRequest::getEmail).collect(Collectors.toList());
@@ -44,7 +44,8 @@ public class InvitationController {
         return ResponseEntity.ok("Invitations sent.");
     }
 
-    @PostMapping("/accept")
+    @Operation(summary = "принятие ссылки, добавляется в базу gameuser, но не может участвовать пока не заполнит контактные данные и вишлист")
+    @PostMapping("/link-invitations-accept")
     public ResponseEntity<?> acceptIndividualInvitation(@RequestParam("code") String invitationCode) {
         User user = customUserDetailService.getCurrentUser();
         UUID userId = user.getId();
@@ -61,6 +62,8 @@ public class InvitationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+    @Operation(summary = "генерация ссылки для игры")
     @GetMapping("/generate-link")
     public ResponseEntity<InvitationLinkResponse> generateLink(@RequestParam UUID gameId) {
         try {

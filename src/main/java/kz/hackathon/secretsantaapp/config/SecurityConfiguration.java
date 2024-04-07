@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**", "/games/**","/settings/**","/invitations/**" ).permitAll()
+                        .requestMatchers("/auth/**", "/games/**","/settings/**","/invitations/**","/wishlist/**", "/gameuser/**"  ).permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/h2-console/**").permitAll()
                        // .requestMatchers("/accounts/**").hasAuthority(Role.ROLE_ORGANISER.name())
                         .anyRequest().authenticated())

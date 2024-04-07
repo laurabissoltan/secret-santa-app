@@ -1,5 +1,6 @@
 package kz.hackathon.secretsantaapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import kz.hackathon.secretsantaapp.dto.game.CreateGameRequest;
@@ -37,6 +38,7 @@ public class GameController {
 
 
     @PostMapping("/create-game")
+    @Operation(summary = "создание игры, нам дополнительно нужно чтоб фронт создал и вернул идентификтор по требованиям (ex. 45LK245 )")
     public ResponseEntity<?> createGame(@Valid @RequestBody CreateGameRequest request, BindingResult result) {
         User currentUser = customUserDetailService.getCurrentUser();
 
@@ -57,9 +59,9 @@ public class GameController {
         Game game = new Game();
         game.setName(request.getName());
         game.setMaxPrice(request.getMaxPrice());
+        game.setUniqueIdentifier(request.getUniqueIdentifier());
         game.setCreator(currentUser);
 
-        //CREATOR IS NOT PARTICIPIANT UNTIL CLICKS OWN CARD
         Game newGame = gameService.createGame(game, currentUser.getId());
 
         gameUserService.createGameUser(newGame.getId(), Collections.singletonList(currentUser.getEmail()));
@@ -78,6 +80,7 @@ public class GameController {
     }
 
     @GetMapping("/mygames")
+    @Operation(summary = "список игр у данного авторизованного пользователя")
     public ResponseEntity<List<GameResponse>> getMyGames() {
         User currentUser = customUserDetailService.getCurrentUser();
         List<Game> games = gameService.getGamesByCreatorId(currentUser.getId());
@@ -93,7 +96,8 @@ public class GameController {
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-/*    @PostMapping("/{gameId}/reshuffle")
+    @Operation(summary = "жеребьевка, люди которые не заполнили контактные данные и вишлист убираются со списока после жеребьевки")
+    @PostMapping("/{gameId}/reshuffle")
     public ResponseEntity<?> reshuffleParticipants(@PathVariable UUID gameId) {
         try {
             gameUserService.reshuffle(gameId);
@@ -101,6 +105,6 @@ public class GameController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error reshuffling participants: " + e.getMessage());
         }
-    }*/
+    }
 
 }
