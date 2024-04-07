@@ -41,7 +41,7 @@ public class AuthController {
             var response = authenticationService.signUp(request);
             return ResponseEntity.ok().body(response);
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("The login provided is already in use. Please choose another one.");
+            return ResponseEntity.badRequest().body("Данный логин уже существует в системе. Пожалуйста придумайте другой логин");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -62,7 +62,7 @@ public class AuthController {
     public String requestResetPassword(@RequestParam("email") String userEmail) {
         User user = userService.getByUsername(userEmail);
         userService.createPasswordResetTokenForUser(user);
-        return "Reset password link sent to email";
+        return "Ссылка для восстанавления аккаунта был отправлен на почту";
     }
 
     @Operation(summary = "восстановаление пароля, принимает три значения, временный токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
@@ -70,14 +70,14 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetRequest) {
         try {
             if (!resetRequest.getNewPassword().equals(resetRequest.getConfirmPassword())) {
-                return ResponseEntity.badRequest().body("Passwords do not match.");
+                return ResponseEntity.badRequest().body("Пароли не совпадают.");
             }
             authenticationService.resetPassword(resetRequest.getToken(), resetRequest.getNewPassword());
-            return ResponseEntity.ok("Password successfully reset. Please log in again.");
+            return ResponseEntity.ok("Пароль успешно восстанавлен. Пожалуйста залогиньтесь заново");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("An error occurred while resetting the password.");
+            return ResponseEntity.internalServerError().body("Ошибка во время восстанавления пароля");
         }
     }
 

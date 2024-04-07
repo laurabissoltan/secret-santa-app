@@ -28,8 +28,8 @@ public class InvitationService {
         String groupInvitationLink = generateShareableLink(gameId);
 
         for (String email : emails) {
-            emailService.sendEmail(email, "You're invited to join a Secret Santa game!",
-                    "Please click the link to join: " + groupInvitationLink);
+            emailService.sendEmail(email, "Ваш приглашают участвовать в игре Secret Santa!",
+                    "Пожалуйста перейдите по ссылке для участия: " + groupInvitationLink);
         }
     }
 

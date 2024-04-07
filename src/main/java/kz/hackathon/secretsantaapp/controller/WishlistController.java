@@ -33,7 +33,7 @@ public class WishlistController {
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
-    @Operation(summary = "создание список подарков, по требованию ограничение максимум 10 подарков")
+    @Operation(summary = "создание списка подарков, по требованию ограничение максимум 10 подарков")
     @PostMapping("/{gameId}/create-wishlist")
     public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @RequestBody List<String> descriptions) {
         User user = customUserDetailService.getCurrentUser();

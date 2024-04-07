@@ -38,7 +38,7 @@ public class AccountController {
 
                 return ResponseEntity.ok(userInfoDTO);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Данного пользователя не существует");
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -50,7 +50,7 @@ public class AccountController {
         try {
             authenticationService.updateLoginEmail(request);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Update successful. Please proceed to login.");
+            return ResponseEntity.status(HttpStatus.OK).body("Данные обновлены. Требуется повторная авторизация");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -60,7 +60,7 @@ public class AccountController {
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         try {
             authenticationService.changePassword(request);
-            return ResponseEntity.ok().body("Password changed successfully.");
+            return ResponseEntity.ok().body("Пароль успешно обновлен");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -71,7 +71,7 @@ public class AccountController {
         try {
             User currentUser = customUserDetailService.getCurrentUser();
             authenticationService.deleteUserByUsername(currentUser.getEmail());
-            return ResponseEntity.ok().body("Account deleted successfully.");
+            return ResponseEntity.ok().body("Аккаунт успешно удален");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
