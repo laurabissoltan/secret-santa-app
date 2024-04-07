@@ -1,17 +1,16 @@
 package kz.hackathon.secretsantaapp.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import kz.hackathon.secretsantaapp.dto.game.GameResponse;
+import jakarta.validation.ValidationException;
 import kz.hackathon.secretsantaapp.dto.wshlist.WishlistResponse;
 import kz.hackathon.secretsantaapp.model.wishlist.Wishlist;
 import kz.hackathon.secretsantaapp.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,10 @@ public class WishlistController {
     @Autowired
     private WishlistService wishlistService;
 
-    @PostMapping
-    public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @PathVariable UUID userId, @PathVariable List<String> descriptions) {
+    
+    //request body, path variable
+    @PostMapping("/{gameId}/{userId}")
+    public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @PathVariable UUID userId, @RequestBody List<String> descriptions) {
         wishlistService.createWishlist(gameId, userId, descriptions);
         return new ResponseEntity<>(HttpStatus.OK);
     }
