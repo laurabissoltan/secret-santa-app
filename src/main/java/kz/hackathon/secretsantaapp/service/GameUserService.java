@@ -89,7 +89,6 @@ public class GameUserService {
     }
 
     public int getParticipantCountByGameId(UUID gameId) {
-        // Assuming you have a repository method to count participants by gameId
         return gameUserRepository.countByGameId(gameId);
     }
 }
