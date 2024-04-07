@@ -41,7 +41,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .login(request.getLogin())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_PARTICIPANT)
+                .role(Role.PARTICIPANT)
                 .build();
 
         user = customUserDetailService.create(user);
@@ -82,7 +82,7 @@ public class AuthenticationService {
         );
     }
 
-    public JwtAuthenticationResponse updateLoginEmail(UpdateLoginEmailRequest request) {
+    public void updateLoginEmail(UpdateLoginEmailRequest request) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = customUserDetailService.getByUsername(currentUsername);
 
@@ -104,14 +104,9 @@ public class AuthenticationService {
 
         if (detailsUpdated) {
             customUserDetailService.update(user);
-            final UserDetails updatedUserDetails = customUserDetailService.loadUserByUsername(user.getEmail());
-            final String newAccessToken = jwtService.generateToken(updatedUserDetails);
-            final String newRefreshToken = jwtService.generateRefreshToken(updatedUserDetails);
-
-            return new JwtAuthenticationResponse(newAccessToken, newRefreshToken);
+        } else {
+            throw new IllegalArgumentException("No updates provided or the new details are the same as the current ones.");
         }
-
-        throw new IllegalArgumentException("No updates provided or the new details are the same as the current ones.");
     }
 
     public void changePassword(ChangePasswordRequest request) {

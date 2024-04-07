@@ -1,5 +1,6 @@
 package kz.hackathon.secretsantaapp.dto.game;
 
+import kz.hackathon.secretsantaapp.model.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,11 @@ import java.util.UUID;
 public class GameResponse {
     private UUID id;
     private String name;
-    private String uniqueIdentifier;
+/*    private String uniqueIdentifier;*/
     private Integer maxPrice; // Can be null to indicate no limit
+    private int participantCount;
     private UUID creatorId;
+    private Role role;
 
 
 }

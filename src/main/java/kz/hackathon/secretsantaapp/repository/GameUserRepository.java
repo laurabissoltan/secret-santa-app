@@ -11,4 +11,6 @@ public interface GameUserRepository extends JpaRepository<GameUser, UUID> {
     List<GameUser> findByGameId(UUID gameId);
     Optional<GameUser> findByGameIdAndUserId(UUID gameId, UUID userId);
 
+    int countByGameId(UUID gameId);
+
 }

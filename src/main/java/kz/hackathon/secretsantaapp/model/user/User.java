@@ -33,7 +33,7 @@ public class User extends BaseEntityAudit implements UserDetails {
     @Column(name="role", nullable = false)
   //  private Role role;
     @Builder.Default
-    private Role role = Role.ROLE_PARTICIPANT;
+    private Role role = Role.PARTICIPANT;
 
     @Column(name = "last_password_reset_date")
     private LocalDateTime lastPasswordResetDate;

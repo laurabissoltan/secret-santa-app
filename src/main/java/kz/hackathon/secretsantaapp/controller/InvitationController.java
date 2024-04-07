@@ -34,18 +34,6 @@ public class InvitationController {
     @Autowired
     private GameUserService gameUserService;
 
-    @GetMapping("/validate")
-    public ResponseEntity<?> validateInvitation(@RequestParam("code") String invitationCode) {
-        Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found."));
-
-        if (invitation.getStatus() != InvitationStatus.PENDING) {
-            return ResponseEntity.badRequest().body("This invitation has already been accepted or is invalid.");
-        }
-
-        return ResponseEntity.ok(new InvitationDetails(invitation.getGame().getId(), invitation.getGame().getName(), "Organizer invites you to the game"));
-    }
-
     @PostMapping("/send")
     public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<String> emails) {
         invitationService.sendInvitations(gameId, emails);
@@ -58,17 +46,12 @@ public class InvitationController {
         Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found."));
 
-        if (invitation.getStatus() != InvitationStatus.PENDING) {
-            return new ResponseEntity<>("This invitation already have been accepted", HttpStatus.BAD_REQUEST);
-        }
-
         if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
             return new ResponseEntity<>("You are already a participant in this game.", HttpStatus.BAD_REQUEST);
         }
 
         gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(userId)));
-     //   invitation.setStatus(InvitationStatus.ACCEPTED);
-     //   invitationRepository.save(invitation);
+        invitationRepository.save(invitation);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

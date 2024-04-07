@@ -87,4 +87,9 @@ public class GameUserService {
     public boolean isParticipant(UUID gameId, UUID userId) {
         return gameUserRepository.findByGameIdAndUserId(gameId, userId).isPresent();
     }
+
+    public int getParticipantCountByGameId(UUID gameId) {
+        // Assuming you have a repository method to count participants by gameId
+        return gameUserRepository.countByGameId(gameId);
+    }
 }
