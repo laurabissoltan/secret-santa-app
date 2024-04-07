@@ -128,7 +128,7 @@ public class GameUserService {
                 .orElseThrow(() -> new EntityNotFoundException("Game not found with gameId: " + gameId));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with userId: " + userId));
-        String content = user.getEmail() + " хочет связаться с вами";
+        String content = "Уважаемый организатор игры" + user.getEmail() + " хочет связаться с вами";
         emailService.sendEmail(game.getCreator().getEmail(), game.getName(), content);
     }
 }

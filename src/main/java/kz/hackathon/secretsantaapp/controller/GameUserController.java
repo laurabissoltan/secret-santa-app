@@ -1,19 +1,15 @@
 package kz.hackathon.secretsantaapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import kz.hackathon.secretsantaapp.dto.game.CreateGameRequest;
+import kz.hackathon.secretsantaapp.dto.game.BeforeGameUser;
+import kz.hackathon.secretsantaapp.dto.game.ContactInfoDto;
 import kz.hackathon.secretsantaapp.dto.game.CreateGameUserRequest;
-import kz.hackathon.secretsantaapp.dto.game.GameResponse;
 import kz.hackathon.secretsantaapp.dto.game.GameUserResponse;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
-import kz.hackathon.secretsantaapp.model.gameUser.Status;
-import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
-import kz.hackathon.secretsantaapp.model.user.Role;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
-import kz.hackathon.secretsantaapp.service.EmailService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,14 +30,21 @@ public class GameUserController {
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
-    @PostMapping("/{gameId}/{userId}")
-    public ResponseEntity<?> updateGameUser(@PathVariable UUID gameId, @PathVariable UUID userId,
-                                            @RequestBody String userName, @RequestBody String email, @RequestBody String phoneNumber) {
-        gameUserService.updateGameUser(gameId, userId, userName, email, phoneNumber);
+
+    @Operation(summary = "добавление контактных данных для участия в игре")
+    @PostMapping("/{gameId}/contact-info")
+    public ResponseEntity<?> updateGameUser(@PathVariable UUID gameId,
+                                            @RequestBody ContactInfoDto contactInfoDto) {
+        User user = customUserDetailService.getCurrentUser();
+        UUID userId = user.getId();
+
+        gameUserService.updateGameUser(gameId, userId,
+                contactInfoDto.getUserName(), contactInfoDto.getEmail(), contactInfoDto.getPhoneNumber());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/{gameId}")
+    @Operation(summary = "добавление участников вручную, организатор ищет в системе людей, которые уже есть и добавляет в игру")
+    @PostMapping("/{gameId}/create")
     public ResponseEntity<?> createGameUsers(@PathVariable UUID gameId, @Valid @RequestBody List<CreateGameUserRequest> requests) {
         List<String> emails = new ArrayList<>();
         requests.forEach(createGameUserRequest -> {
@@ -51,7 +54,8 @@ public class GameUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/{gameId}")
+    @Operation(summary = "список участников после жеребьевки")
+    @PostMapping("/{gameId}/list-after-shuffle")
     public ResponseEntity<?> listGameUsers(@PathVariable UUID gameId) {
         List<GameUser> gameUsers = gameUserService.getGamesUserByGameId(gameId);
         List<GameUserResponse> responses = new ArrayList<>();
@@ -64,7 +68,23 @@ public class GameUserController {
         return new ResponseEntity<>(responses,HttpStatus.OK);
     }
 
-    @PostMapping("/{gameId}")
+    @Operation(summary = "список участников до жеребьевки")
+    @PostMapping("/{gameId}/list-before-shuffle")
+    public ResponseEntity<?> listAllGameUsers(@PathVariable UUID gameId) {
+        List<GameUser> gameUsers = gameUserService.getGamesUserByGameId(gameId);
+        List<BeforeGameUser> responses = new ArrayList<>();
+        gameUsers.forEach(gameUser -> {
+            responses.add(new BeforeGameUser(
+                    gameUser.getId(), gameUser.getGame().getName(), gameUser.getUser().getEmail(),
+                    gameUser.getStatus(), gameUser.getFeedback(), gameUser.getInvitationStatus(), gameUser.getUserName(),
+                    gameUser.getEmail(), gameUser.getPhoneNumber()));
+        });
+        return new ResponseEntity<>(responses,HttpStatus.OK);
+    }
+
+
+    @Operation(summary = "связаться с организатором, отправляется сообщение на почту организатору")
+    @PostMapping("/{gameId}/send-email")
     public ResponseEntity<?> sendEmailOrganizer(@PathVariable UUID gameId) {
         gameUserService.sendEmailOrganizer(gameId, customUserDetailService.getCurrentUser().getId());
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,5 +1,6 @@
 package kz.hackathon.secretsantaapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -64,6 +65,7 @@ public class AuthController {
         return "Reset password link sent to email";
     }
 
+    @Operation(summary = "восстановаление пароля, принимает три значения, временный токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetRequest) {
         try {

@@ -1,9 +1,12 @@
 package kz.hackathon.secretsantaapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.ValidationException;
 import kz.hackathon.secretsantaapp.dto.wshlist.WishlistResponse;
+import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.model.wishlist.Wishlist;
+import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
 import kz.hackathon.secretsantaapp.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +30,26 @@ public class WishlistController {
     @Autowired
     private GameUserService gameUserService;
 
-    
-    //request body, path variable
-    @PostMapping("/{gameId}/{userId}")
-    public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @PathVariable UUID userId, @RequestBody List<String> descriptions) {
+    @Autowired
+    private CustomUserDetailService customUserDetailService;
+
+    @Operation(summary = "создание список подарков, по требованию ограничение максимум 10 подарков")
+    @PostMapping("/{gameId}/create-wishlist")
+    public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @RequestBody List<String> descriptions) {
+        User user = customUserDetailService.getCurrentUser();
+        UUID userId = user.getId();
+
         wishlistService.createWishlist(gameId, userId, descriptions);
         gameUserService.updateGameUserStatusAccepted(gameId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/giftlist")
-    public ResponseEntity<List<WishlistResponse>> getWishlist(@PathVariable UUID gameId, @PathVariable UUID userId) {
+    @Operation(summary = "список подарков подопечнего данного пользователя")
+    @GetMapping("/{gameId}/my-giftee")
+    public ResponseEntity<List<WishlistResponse>> getWishlist(@PathVariable UUID gameId) {
+        User user = customUserDetailService.getCurrentUser();
+        UUID userId = user.getId();
+
         List<Wishlist> wishlists = wishlistService.getWishlistByGameIdAndUserId(gameId, userId);
         List<WishlistResponse> wishlistResponses = new ArrayList<>();
         wishlists.forEach(wishlist -> {
