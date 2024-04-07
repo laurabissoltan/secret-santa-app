@@ -96,6 +96,20 @@ public class JwtService {
         return username.equals(user.getUsername()) && !isTokenExpired(token) && issuedAfterLastReset;
     }
 
+    public UUID extractUserId(String token) {
+        return UUID.fromString(extractClaim(token, claims -> claims.get("id", String.class)));
+    }
+
+/*    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final UUID userId = extractUserId(token);
+        final User user = (User) userDetails;
+
+        Date tokenIssuedAt = extractIssuedAt(token);
+        boolean issuedAfterLastReset = user.getLastPasswordResetDate() == null ||
+                tokenIssuedAt.after(Timestamp.valueOf(user.getLastPasswordResetDate()));
+
+        return userId.equals(user.getId()) && !isTokenExpired(token) && issuedAfterLastReset;
+    }*/
     private Date extractIssuedAt(String token) {
         return extractClaim(token, Claims::getIssuedAt);
     }

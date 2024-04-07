@@ -27,11 +27,10 @@ public class GameService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + creatorId));
 
         game.setCreator(creator);
-        creator.setRole(Role.ROLE_ORGANISER);
-
-        if (game.getUniqueIdentifier() == null || game.getUniqueIdentifier().isEmpty()) {
+        creator.setRole(Role.ORGANISER);
+/*        if (game.getUniqueIdentifier() == null || game.getUniqueIdentifier().isEmpty()) {
             game.setUniqueIdentifier(UUID.randomUUID().toString());
-        }
+        }*/
 
         return gameRepository.save(game);
     }

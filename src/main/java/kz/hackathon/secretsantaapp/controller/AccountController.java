@@ -29,8 +29,9 @@ public class AccountController {
     @PostMapping("/update-login-email")
     public ResponseEntity<?> updateLoginEmail(@RequestBody UpdateLoginEmailRequest request) {
         try {
-            JwtAuthenticationResponse jwtResponse = authenticationService.updateLoginEmail(request);
-            return ResponseEntity.ok(jwtResponse); // Return the response with the new tokens
+            authenticationService.updateLoginEmail(request);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Update successful. Please proceed to login.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
