@@ -4,6 +4,7 @@ package kz.hackathon.secretsantaapp.controller;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationDetails;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationLinkResponse;
+import kz.hackathon.secretsantaapp.dto.invitation.InvitationRequest;
 import kz.hackathon.secretsantaapp.model.invitation.Invitation;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import kz.hackathon.secretsantaapp.repository.InvitationRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/invitations")
@@ -35,7 +37,8 @@ public class InvitationController {
     private GameUserService gameUserService;
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<String> emails) {
+    public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) {
+        List<String> emails = invitationRequests.stream().map(InvitationRequest::getEmail).collect(Collectors.toList());
         invitationService.sendInvitations(gameId, emails);
         return ResponseEntity.ok("Invitations sent.");
     }

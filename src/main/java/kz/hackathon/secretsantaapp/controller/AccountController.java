@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import kz.hackathon.secretsantaapp.dto.accountSettings.ChangePasswordRequest;
 import kz.hackathon.secretsantaapp.dto.accountSettings.UpdateLoginEmailRequest;
+import kz.hackathon.secretsantaapp.dto.accountSettings.UserInfoDto;
 import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.AuthenticationService;
@@ -25,6 +26,24 @@ import java.util.Optional;
 public class AccountController {
     private final AuthenticationService authenticationService;
     private final CustomUserDetailService customUserDetailService;
+
+    @GetMapping("/user-info")
+    public ResponseEntity<?> getUserInfo() {
+        try {
+            User currentUser = customUserDetailService.getCurrentUser();
+            if (currentUser != null) {
+                UserInfoDto userInfoDTO = new UserInfoDto();
+                userInfoDTO.setEmail(currentUser.getEmail());
+                userInfoDTO.setLogin(currentUser.getLogin());
+
+                return ResponseEntity.ok(userInfoDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/update-login-email")
     public ResponseEntity<?> updateLoginEmail(@RequestBody UpdateLoginEmailRequest request) {
