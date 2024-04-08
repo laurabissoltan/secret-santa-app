@@ -9,7 +9,9 @@ import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
 import kz.hackathon.secretsantaapp.dto.registration.RefreshTokenRequest;
 import kz.hackathon.secretsantaapp.dto.registration.RegisterRequest;
 import kz.hackathon.secretsantaapp.dto.resetPassword.ResetPasswordRequest;
+import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
 import kz.hackathon.secretsantaapp.model.user.User;
+import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
 import kz.hackathon.secretsantaapp.service.AuthenticationService;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.JwtService;
@@ -35,6 +37,9 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {
         try {
@@ -59,20 +64,26 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public String requestResetPassword(@RequestParam("email") String userEmail) {
+    public ResponseEntity<String> requestResetPassword(@RequestParam("email") String userEmail) {
         User user = userService.getByUsername(userEmail);
-        userService.createPasswordResetTokenForUser(user);
-        return "Ссылка для восстанавления аккаунта был отправлен на почту";
+        if(user != null) {
+            userService.createPasswordResetTokenForUser(user);
+         //   return ResponseEntity.notFound().body("Пользователь с таким email не найден в системе.");
+        }
+
+        return ResponseEntity.ok("Если ваш email зарегистрирован в нашей системе, на него будет отправлена ссылка для восстановления аккаунта.");
     }
 
     @Operation(summary = "восстановаление пароля, принимает три значения, временный токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetRequest) {
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody ResetPasswordRequest resetRequest) {
         try {
             if (!resetRequest.getNewPassword().equals(resetRequest.getConfirmPassword())) {
                 return ResponseEntity.badRequest().body("Пароли не совпадают.");
             }
-            authenticationService.resetPassword(resetRequest.getToken(), resetRequest.getNewPassword());
+         //   PasswordResetToken myToken = passwordResetTokenRepository.findByToken(token);
+            authenticationService.resetPassword(token, resetRequest.getNewPassword());
+
             return ResponseEntity.ok("Пароль успешно восстанавлен. Пожалуйста залогиньтесь заново");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

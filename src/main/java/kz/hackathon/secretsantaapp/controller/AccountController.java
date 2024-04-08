@@ -27,6 +27,7 @@ public class AccountController {
     private final AuthenticationService authenticationService;
     private final CustomUserDetailService customUserDetailService;
 
+/*
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo() {
         try {
@@ -44,6 +45,7 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+*/
 
     @PostMapping("/update-login-email")
     public ResponseEntity<?> updateLoginEmail(@RequestBody UpdateLoginEmailRequest request) {
