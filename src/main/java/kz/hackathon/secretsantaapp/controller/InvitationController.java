@@ -45,7 +45,7 @@ public class InvitationController {
     }
 
     @Operation(summary = "принятие ссылки, добавляется в базу gameuser, но не может участвовать пока не заполнит контактные данные и вишлист")
-    @PostMapping("/link-invitations-accept")
+    @PostMapping("/accept")
     public ResponseEntity<?> acceptIndividualInvitation(@RequestParam("code") String invitationCode) {
         User user = customUserDetailService.getCurrentUser();
         UUID userId = user.getId();
