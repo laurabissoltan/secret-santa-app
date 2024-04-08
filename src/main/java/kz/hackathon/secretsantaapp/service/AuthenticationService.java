@@ -78,8 +78,7 @@ public class AuthenticationService {
         user.setLastPasswordResetDate(LocalDateTime.now());
         userRepository.save(user);
 
-        passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete
-        );
+        passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);
     }
 
     public void updateLoginEmail(UpdateLoginEmailRequest request) {
