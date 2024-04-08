@@ -27,26 +27,6 @@ public class AccountController {
     private final AuthenticationService authenticationService;
     private final CustomUserDetailService customUserDetailService;
 
-/*
-    @GetMapping("/user-info")
-    public ResponseEntity<?> getUserInfo() {
-        try {
-            User currentUser = customUserDetailService.getCurrentUser();
-            if (currentUser != null) {
-                UserInfoDto userInfoDTO = new UserInfoDto();
-                userInfoDTO.setEmail(currentUser.getEmail());
-                userInfoDTO.setLogin(currentUser.getLogin());
-
-                return ResponseEntity.ok(userInfoDTO);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Данного пользователя не существует");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-*/
-
     @PostMapping("/update-login-email")
     public ResponseEntity<?> updateLoginEmail(@RequestBody UpdateLoginEmailRequest request) {
         try {

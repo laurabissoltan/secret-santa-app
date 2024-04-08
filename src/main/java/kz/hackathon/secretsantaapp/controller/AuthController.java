@@ -9,9 +9,7 @@ import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
 import kz.hackathon.secretsantaapp.dto.registration.RefreshTokenRequest;
 import kz.hackathon.secretsantaapp.dto.registration.RegisterRequest;
 import kz.hackathon.secretsantaapp.dto.resetPassword.ResetPasswordRequest;
-import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
 import kz.hackathon.secretsantaapp.model.user.User;
-import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
 import kz.hackathon.secretsantaapp.service.AuthenticationService;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.JwtService;
@@ -36,9 +34,6 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
-
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {

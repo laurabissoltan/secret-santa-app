@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -43,15 +44,16 @@ public class GameService {
         return gameRepository.findByCreatorId(creatorId);
     }
 
-/*    public void addParticipantToGame(UUID gameId, UUID userId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new EntityNotFoundException("Game not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        game.getParticipants().add(user);
-        gameRepository.save(game);
-    }*/
 
 
+    private final Random random = new Random();
+    private final char[] charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
+
+    public String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(charPool[random.nextInt(charPool.length)]);
+        }
+        return sb.toString();
+    }
 }

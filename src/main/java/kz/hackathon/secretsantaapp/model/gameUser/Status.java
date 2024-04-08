@@ -9,5 +9,10 @@ public enum Status {
     WAITING_GIFT,
     RECEIVING_GIFT,
     FEEDBACK,
-    END_GAME
+    END_GAME,
+    IN_PROCESS,
+    MATCHING_COMPLETED
+
+
+
 }

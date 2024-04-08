@@ -33,6 +33,7 @@ public class InvitationService {
         }
     }
 
+
     public String generateShareableLink(UUID gameId) {
         Optional<Invitation> existingGroupInvitation = invitationRepository.findByGameIdAndGroupInvitationTrue(gameId);
 
@@ -52,7 +53,7 @@ public class InvitationService {
             invitationCode = invitation.getInvitationCode();
         }
 
-        return "https://localhost:8080/accept-invitation?code=" + invitationCode;
+        return "http://20.106.220.123/api/invitations/accept-invitation?code=" + invitationCode;
     }
 
 

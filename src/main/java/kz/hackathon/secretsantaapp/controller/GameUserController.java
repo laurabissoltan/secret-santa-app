@@ -8,6 +8,7 @@ import kz.hackathon.secretsantaapp.dto.game.ContactInfoDto;
 import kz.hackathon.secretsantaapp.dto.game.CreateGameUserRequest;
 import kz.hackathon.secretsantaapp.dto.game.GameUserResponse;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
@@ -87,6 +88,8 @@ public class GameUserController {
     @PostMapping("/{gameId}/send-email")
     public ResponseEntity<?> sendEmailOrganizer(@PathVariable UUID gameId) {
         gameUserService.sendEmailOrganizer(gameId, customUserDetailService.getCurrentUser().getId());
+        GameUser gameUser = (GameUser) gameUserService.getGamesUserByGameId(gameId);
+        gameUser.setStatus(Status.EMERGENCY_SITUATIONS);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
