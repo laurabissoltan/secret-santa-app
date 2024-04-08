@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import kz.hackathon.secretsantaapp.dto.game.CreateGameRequest;
 import kz.hackathon.secretsantaapp.dto.game.GameResponse;
 import kz.hackathon.secretsantaapp.model.game.Game;
+import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.Role;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
@@ -66,18 +68,20 @@ public class GameController {
 
         gameUserService.createGameUser(newGame.getId(), Collections.singletonList(currentUser.getEmail()));
 
+        newGame.setStatus(Status.IN_PROCESS);
         GameResponse response = new GameResponse(
                 newGame.getId(),
                 newGame.getName(),
                 newGame.getMaxPrice(),
-
-                gameUserService.getParticipantCountByGameId(newGame.getId()),
+                (int) gameUserService.getParticipantCountByGameId(newGame.getId()),
                 newGame.getCreator().getId(),
-                Role.ORGANISER
+                Role.ORGANISER,
+                newGame.getStatus()
         );
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/mygames")
     @Operation(summary = "список игр у данного авторизованного пользователя")
@@ -88,10 +92,12 @@ public class GameController {
         List<GameResponse> responses = new ArrayList<>();
         games.forEach(game -> {
             Role userRole = (game.getCreator().getId().equals(currentUser.getId())) ? Role.ORGANISER : Role.PARTICIPANT;
-            int participantCount = gameUserService.getParticipantCountByGameId(game.getId());
+            int participantCount = (int) gameUserService.getParticipantCountByGameId(game.getId());
+
+            // int participantCount = gameUserService.getParticipantCountByGameId(game.getId());
             responses.add(new GameResponse(
                     game.getId(), game.getName(),/* game.getUniqueIdentifier(),*/
-                    game.getMaxPrice(), participantCount, game.getCreator().getId(), userRole));
+                    game.getMaxPrice(), participantCount, game.getCreator().getId(), userRole, game.getStatus()));
         });
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
@@ -101,6 +107,8 @@ public class GameController {
     public ResponseEntity<?> reshuffleParticipants(@PathVariable UUID gameId) {
         try {
             gameUserService.reshuffle(gameId);
+            GameUser gameUser = (GameUser) gameUserService.getGamesUserByGameId(gameId);
+            gameUser.setStatus(Status.MATCHING_COMPLETED);
             return ResponseEntity.ok("Жеребьевка завершена");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка во время жеребьевки: " + e.getMessage());

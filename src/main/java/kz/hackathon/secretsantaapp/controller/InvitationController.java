@@ -5,10 +5,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationLinkResponse;
 import kz.hackathon.secretsantaapp.dto.invitation.InvitationRequest;
+import kz.hackathon.secretsantaapp.model.game.Game;
+import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.invitation.Invitation;
 import kz.hackathon.secretsantaapp.model.user.User;
+import kz.hackathon.secretsantaapp.repository.GameUserRepository;
 import kz.hackathon.secretsantaapp.repository.InvitationRepository;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
+import kz.hackathon.secretsantaapp.service.GameService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
 import kz.hackathon.secretsantaapp.service.InvitationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +50,8 @@ public class InvitationController {
     }
 
     @Operation(summary = "принятие ссылки, добавляется в базу gameuser, но не может участвовать пока не заполнит контактные данные и вишлист")
-    @PostMapping("/accept")
-    public ResponseEntity<?> acceptIndividualInvitation(@RequestParam("code") String invitationCode) {
+    @PostMapping("/accept/{invitationCode}")
+    public ResponseEntity<?> acceptIndividualInvitation(@PathVariable("invitationCode") String invitationCode) {
         User user = customUserDetailService.getCurrentUser();
         UUID userId = user.getId();
         Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
@@ -59,7 +64,10 @@ public class InvitationController {
         gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(user.getEmail())));
         invitationRepository.save(invitation);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Invitation accepted successfully.");
+        response.put("gameId", invitation.getGame().getId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -73,4 +81,6 @@ public class InvitationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new InvitationLinkResponse(e.getMessage()));
         }
     }
+
+
 }

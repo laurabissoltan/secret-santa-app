@@ -3,11 +3,9 @@ package kz.hackathon.secretsantaapp.model.game;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import kz.hackathon.secretsantaapp.model.base.BaseEntityAudit;
+import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +15,8 @@ import java.util.UUID;
 @Table(name="game")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Game extends BaseEntityAudit {
     @Column(name="name", nullable = false)
     private String name;
@@ -33,6 +32,8 @@ public class Game extends BaseEntityAudit {
     private User creator;
 
     private Currency currency;
+
+    private Status status;
 
     @ManyToMany
     @JoinTable(

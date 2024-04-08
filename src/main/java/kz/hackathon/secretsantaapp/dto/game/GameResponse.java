@@ -1,5 +1,6 @@
 package kz.hackathon.secretsantaapp.dto.game;
 
+import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class GameResponse {
     private int participantCount;
     private UUID creatorId;
     private Role role;
+    private Status status;
 
 
 }

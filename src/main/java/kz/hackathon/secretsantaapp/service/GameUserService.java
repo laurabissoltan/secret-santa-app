@@ -10,8 +10,6 @@ import kz.hackathon.secretsantaapp.repository.GameUserRepository;
 import kz.hackathon.secretsantaapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,8 +57,8 @@ public class GameUserService {
         return gameUserRepository.findByGameIdAndInvitationStatus(gameId, invitationStatus);
     }
 
-    public GameUser getGameUserByGameIdAndUserId(UUID gameId, UUID userId){
-        return gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
+    public long countAcceptedInvitations(UUID gameId) {
+        return gameUserRepository.countByGameIdAndInvitationStatus(gameId, InvitationStatus.ACCEPTED);
     }
 
     public void reshuffle(UUID gameId){
@@ -102,8 +100,8 @@ public class GameUserService {
         return gameUserRepository.findByGameIdAndUserId(gameId, userId).isPresent();
     }
 
-    public int getParticipantCountByGameId(UUID gameId) {
-        return gameUserRepository.countByGameId(gameId);
+    public long getParticipantCountByGameId(UUID gameId) {
+        return gameUserRepository.countByGameIdAndInvitationStatus(gameId, InvitationStatus.ACCEPTED);
     }
 
     public GameUser updateGameUser(UUID gameId, UUID userId,
@@ -116,11 +114,11 @@ public class GameUserService {
         return gameUserRepository.save(gameUser);
     }
 
-    public GameUser updateGameUserStatusAccepted(UUID gameId, UUID userId){
+    public void updateGameUserStatusAccepted(UUID gameId, UUID userId){
         GameUser gameUser = gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
         assert gameUser != null;
         gameUser.setInvitationStatus(InvitationStatus.ACCEPTED);
-        return gameUserRepository.save(gameUser);
+        gameUserRepository.save(gameUser);
     }
 
     public void sendEmailOrganizer(UUID gameId, UUID userId){
