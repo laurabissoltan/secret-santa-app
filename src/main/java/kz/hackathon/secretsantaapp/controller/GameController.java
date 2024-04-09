@@ -61,7 +61,7 @@ public class GameController {
         Game game = new Game();
         game.setName(request.getName());
         game.setMaxPrice(request.getMaxPrice());
-        game.setUniqueIdentifier(request.getUniqueIdentifier());
+     //   game.setUniqueIdentifier(request.getUniqueIdentifier());
         game.setCreator(currentUser);
         game.setStatus(Status.IN_PROCESS);
 
