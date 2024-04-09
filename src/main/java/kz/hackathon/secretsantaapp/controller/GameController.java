@@ -10,6 +10,7 @@ import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
 import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.Role;
 import kz.hackathon.secretsantaapp.model.user.User;
+import kz.hackathon.secretsantaapp.repository.GameUserRepository;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
@@ -82,21 +83,31 @@ public class GameController {
     }
 
 
+    @Autowired
+    GameUserRepository gameUserRepository;
+
     @GetMapping("/mygames")
     @Operation(summary = "список игр у данного авторизованного пользователя")
     public ResponseEntity<List<GameResponse>> getMyGames() {
         User currentUser = customUserDetailService.getCurrentUser();
-        List<Game> games = gameService.getGamesByCreatorId(currentUser.getId());
+
+        List<GameUser> userGames = gameUserRepository.findByUserId(currentUser.getId());
+
 
         List<GameResponse> responses = new ArrayList<>();
-        games.forEach(game -> {
-            Role userRole = (game.getCreator().getId().equals(currentUser.getId())) ? Role.ORGANISER : Role.PARTICIPANT;
-            int participantCount = (int) gameUserService.getParticipantCountByGameId(game.getId());
+        userGames.forEach(gameUser -> {
+            Role userRole = (gameUser.getGame().getCreator().getId().equals(currentUser.getId())) ? Role.ORGANISER : Role.PARTICIPANT;
+            int participantCount = (int) gameUserService.getParticipantCountByGameId(gameUser.getGame().getId());
 
             // int participantCount = gameUserService.getParticipantCountByGameId(game.getId());
             responses.add(new GameResponse(
-                    game.getId(), game.getName(),/* game.getUniqueIdentifier(),*/
-                    game.getMaxPrice(), participantCount, game.getCreator().getId(), userRole));
+                    gameUser.getGame().getId(),
+                    gameUser.getGame().getName(),
+                //    gameUser.getGame().getUniqueIdentifier(),
+                    gameUser.getGame().getMaxPrice(),
+                    participantCount,
+                    gameUser.getGame().getCreator().getId(),
+                    userRole));
         });
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
