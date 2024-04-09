@@ -47,7 +47,7 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+//delete account
     @DeleteMapping("/delete-account")
     public ResponseEntity<?> deleteAccount() {
         try {
