@@ -55,7 +55,7 @@ public class InvitationController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Приглашение не найдено."));
 
         if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
-            return new ResponseEntity<>("Вы уже являетесь участников игры.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Вы уже являетесь участником игры.", HttpStatus.CONFLICT);
         }
 
         gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(user.getEmail())));

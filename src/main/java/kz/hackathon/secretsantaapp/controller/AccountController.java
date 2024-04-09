@@ -52,10 +52,7 @@ public class AccountController {
     public ResponseEntity<?> deleteAccount() {
         try {
             User currentUser = customUserDetailService.getCurrentUser();
-        /*    customUserDetailService.deleteUserAndUnlinkGames(currentUser.getId());
-            customUserDetailService.deleteUserInTheWishList(currentUser.getId());
-            customUserDetailService.deleteUserInGameUser(currentUser.getId());*/
-            customUserDetailService.deleteUser(currentUser.getId());
+            customUserDetailService.deleteUserAccount(currentUser.getId());
           //  authenticationService.deleteUserByUsername(currentUser.getEmail());
             return ResponseEntity.ok().body("Аккаунт успешно удален");
         } catch (Exception e) {
