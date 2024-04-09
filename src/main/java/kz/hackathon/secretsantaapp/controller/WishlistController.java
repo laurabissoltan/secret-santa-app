@@ -55,7 +55,7 @@ public class WishlistController {
         wishlists.forEach(wishlist -> {
             wishlistResponses.add(new WishlistResponse(
                     wishlist.getId(), wishlist.getGame().getId(),
-                    wishlist.getUser().getId(), wishlist.getDescription()));
+                    wishlist.getUser().getId(), wishlist.getUser().getEmail(), wishlist.getDescription()));
         });
         return new ResponseEntity<>(wishlistResponses,HttpStatus.OK);
     }

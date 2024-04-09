@@ -15,7 +15,7 @@ public class CreateGameRequest {
     @Min(value = 1, message = "Max price must be greater than 0.")
     private Integer maxPrice; //No @NotNull here, to allow null when the checkbox is not checked
 
-    @Column(name="unique_identifier", nullable = false, unique = true)
+    @Column(name="unique_identifier")
     private String uniqueIdentifier;
 
     @NotNull(message = "Price limit checked status is required.")

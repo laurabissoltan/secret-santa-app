@@ -7,12 +7,13 @@ import kz.hackathon.secretsantaapp.dto.accountSettings.UpdateLoginEmailRequest;
 import kz.hackathon.secretsantaapp.dto.registration.AuthenticationRequest;
 import kz.hackathon.secretsantaapp.dto.registration.JwtAuthenticationResponse;
 import kz.hackathon.secretsantaapp.dto.registration.RegisterRequest;
+import kz.hackathon.secretsantaapp.model.game.Game;
 import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
 import kz.hackathon.secretsantaapp.model.user.Role;
 import kz.hackathon.secretsantaapp.model.user.User;
-import kz.hackathon.secretsantaapp.repository.PasswordResetTokenRepository;
-import kz.hackathon.secretsantaapp.repository.UserRepository;
+import kz.hackathon.secretsantaapp.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +72,7 @@ public class AuthenticationService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token);
-        if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (resetToken.isDeactivated() || resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Invalid or expired token");
         }
 
@@ -78,7 +81,8 @@ public class AuthenticationService {
         user.setLastPasswordResetDate(LocalDateTime.now());
         userRepository.save(user);
 
-        passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);
+        resetToken.setDeactivated(true);
+        passwordResetTokenRepository.save(resetToken);
     }
 
     public void updateLoginEmail(UpdateLoginEmailRequest request) {
@@ -140,5 +144,19 @@ public class AuthenticationService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + username));
         userRepository.delete(user);
     }
+
+    @Autowired
+    GameUserRepository gameUserRepository;
+    @Autowired
+    GameRepository gameRepository;
+    WishlistRepository wishlistRepository;
+   // UserRepository userRepository;
+    @Autowired
+    InvitationRepository invitationRepository;
+
+
+
+
+
 }
 

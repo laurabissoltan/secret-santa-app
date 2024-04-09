@@ -46,14 +46,4 @@ public class GameService {
 
 
 
-    private final Random random = new Random();
-    private final char[] charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
-
-    public String generateRandomString(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(charPool[random.nextInt(charPool.length)]);
-        }
-        return sb.toString();
-    }
 }

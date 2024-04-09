@@ -2,6 +2,7 @@ package kz.hackathon.secretsantaapp.model.user;
 
 import jakarta.persistence.*;
 import kz.hackathon.secretsantaapp.model.base.BaseEntityAudit;
+import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,6 +45,8 @@ public class User extends BaseEntityAudit implements UserDetails {
     @Column(name = "profile_picture")
     private String profilePictureURL;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PasswordResetToken passwordResetToken;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

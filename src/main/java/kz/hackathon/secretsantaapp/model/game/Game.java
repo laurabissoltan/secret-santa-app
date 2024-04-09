@@ -21,7 +21,7 @@ public class Game extends BaseEntityAudit {
     @Column(name="name", nullable = false)
     private String name;
 
-    @Column(name="unique_identifier", nullable = false, unique = true)
+    @Column(name="unique_identifier")
     private String uniqueIdentifier;
 
     @Column(name="max_price")
@@ -33,13 +33,5 @@ public class Game extends BaseEntityAudit {
 
     private Currency currency;
 
-    private Status status;
-
-    @ManyToMany
-    @JoinTable(
-            name = "game_participants",
-            joinColumns = @JoinColumn(name="game_id"),
-            inverseJoinColumns = @JoinColumn(name="user_id")
-    )
-    private Set<User> participants = new HashSet<>();
+ //   private Status status;
 }

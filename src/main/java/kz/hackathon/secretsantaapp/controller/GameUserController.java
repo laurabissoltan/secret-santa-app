@@ -44,8 +44,8 @@ public class GameUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(summary = "добавление участников вручную, организатор ищет в системе людей, которые уже есть и добавляет в игру")
-    @PostMapping("/{gameId}/create")
+    @Operation(summary = "добавление участников вручную вариант 2: организатор ищет в системе людей, которые уже есть и добавляет в игру")
+    @PostMapping("/{gameId}/add-existing-users")
     public ResponseEntity<?> createGameUsers(@PathVariable UUID gameId, @Valid @RequestBody List<CreateGameUserRequest> requests) {
         List<String> emails = new ArrayList<>();
         requests.forEach(createGameUserRequest -> {

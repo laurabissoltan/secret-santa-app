@@ -15,5 +15,6 @@ public class WishlistResponse {
     private UUID id;
     private UUID gameId;
     private UUID userId;
+    private String email;
     private String description;
 }

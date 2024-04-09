@@ -13,7 +13,6 @@ import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
-import kz.hackathon.secretsantaapp.service.InvitationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,15 +67,15 @@ public class GameController {
 
         gameUserService.createGameUser(newGame.getId(), Collections.singletonList(currentUser.getEmail()));
 
-        newGame.setStatus(Status.IN_PROCESS);
+     //   newGame.setStatus(Status.IN_PROCESS);
         GameResponse response = new GameResponse(
                 newGame.getId(),
                 newGame.getName(),
                 newGame.getMaxPrice(),
                 (int) gameUserService.getParticipantCountByGameId(newGame.getId()),
                 newGame.getCreator().getId(),
-                Role.ORGANISER,
-                newGame.getStatus()
+                Role.ORGANISER
+           //     newGame.getStatus()
         );
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -97,7 +96,7 @@ public class GameController {
             // int participantCount = gameUserService.getParticipantCountByGameId(game.getId());
             responses.add(new GameResponse(
                     game.getId(), game.getName(),/* game.getUniqueIdentifier(),*/
-                    game.getMaxPrice(), participantCount, game.getCreator().getId(), userRole, game.getStatus()));
+                    game.getMaxPrice(), participantCount, game.getCreator().getId(), userRole));
         });
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
@@ -107,8 +106,6 @@ public class GameController {
     public ResponseEntity<?> reshuffleParticipants(@PathVariable UUID gameId) {
         try {
             gameUserService.reshuffle(gameId);
-            GameUser gameUser = (GameUser) gameUserService.getGamesUserByGameId(gameId);
-            gameUser.setStatus(Status.MATCHING_COMPLETED);
             return ResponseEntity.ok("Жеребьевка завершена");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка во время жеребьевки: " + e.getMessage());

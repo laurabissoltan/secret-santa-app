@@ -69,7 +69,7 @@ public class AuthController {
         return ResponseEntity.ok("Если ваш email зарегистрирован в нашей системе, на него будет отправлена ссылка для восстановления аккаунта.");
     }
 
-    @Operation(summary = "восстановаление пароля, принимает три значения, временный токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
+    @Operation(summary = "восстановаление пароля, принимает три значения, временный одноразовый токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody ResetPasswordRequest resetRequest) {
         try {
