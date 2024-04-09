@@ -121,6 +121,7 @@ public class GameUserService {
         gameUserRepository.save(gameUser);
     }
 
+
     public void sendEmailOrganizer(UUID gameId, UUID userId){
         Game game =  gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game not found with gameId: " + gameId));
@@ -129,4 +130,7 @@ public class GameUserService {
         String content = "Уважаемый организатор игры" + user.getEmail() + " хочет связаться с вами";
         emailService.sendEmail(game.getCreator().getEmail(), game.getName(), content);
     }
+
+
+
 }

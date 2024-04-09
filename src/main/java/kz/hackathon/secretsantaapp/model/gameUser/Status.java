@@ -12,7 +12,4 @@ public enum Status {
     END_GAME,
     IN_PROCESS,
     MATCHING_COMPLETED
-
-
-
 }
