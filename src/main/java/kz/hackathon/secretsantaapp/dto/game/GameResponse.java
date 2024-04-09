@@ -22,7 +22,7 @@ public class GameResponse {
     private int participantCount;
     private UUID creatorId;
     private Role role;
-    private Status status;
+   // private Status status;
 
 
 }

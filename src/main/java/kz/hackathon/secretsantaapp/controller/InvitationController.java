@@ -41,7 +41,7 @@ public class InvitationController {
     @Autowired
     private GameUserService gameUserService;
 
-    @Operation(summary = "отправка ссылку на игру по почте")
+    @Operation(summary = "добавление вручную вариант 1: отправка ссылку на игру по почте")
     @PostMapping("/send")
     public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) {
         List<String> emails = invitationRequests.stream().map(InvitationRequest::getEmail).collect(Collectors.toList());

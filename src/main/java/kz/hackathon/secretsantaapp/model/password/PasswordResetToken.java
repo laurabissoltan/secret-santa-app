@@ -25,4 +25,6 @@ public class PasswordResetToken {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
+    private boolean deactivated;
+
 }

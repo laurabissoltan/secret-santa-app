@@ -30,7 +30,7 @@ public class GameUserService {
     @Autowired
     private EmailService emailService;
 
-    public List<GameUser> createGameUser(UUID gameId, List<String> emails) {
+    public void createGameUser(UUID gameId, List<String> emails) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game not found with ID: " + gameId));
 
@@ -46,7 +46,7 @@ public class GameUserService {
             gameUserList.add(gameUser);
         });
 
-        return gameUserRepository.saveAll(gameUserList);
+        gameUserRepository.saveAll(gameUserList);
     }
 
     public List<GameUser> getGamesUserByGameId(UUID gameId){
@@ -104,14 +104,14 @@ public class GameUserService {
         return gameUserRepository.countByGameIdAndInvitationStatus(gameId, InvitationStatus.ACCEPTED);
     }
 
-    public GameUser updateGameUser(UUID gameId, UUID userId,
-                                   String userName, String email, String phoneNumber){
+    public void updateGameUser(UUID gameId, UUID userId,
+                               String userName, String email, String phoneNumber){
         GameUser gameUser = gameUserRepository.findByGameIdAndUserId(gameId, userId).orElse(null);
         assert gameUser != null;
         gameUser.setUserName(userName);
         gameUser.setEmail(email);
         gameUser.setPhoneNumber(phoneNumber);
-        return gameUserRepository.save(gameUser);
+        gameUserRepository.save(gameUser);
     }
 
     public void updateGameUserStatusAccepted(UUID gameId, UUID userId){
