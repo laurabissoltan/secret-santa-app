@@ -1,6 +1,6 @@
 package kz.hackathon.secretsantaapp.dto.game;
 
-import kz.hackathon.secretsantaapp.model.gameUser.Status;
+import kz.hackathon.secretsantaapp.model.game.Status;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

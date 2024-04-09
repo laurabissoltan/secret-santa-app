@@ -1,4 +1,4 @@
-package kz.hackathon.secretsantaapp.model.gameUser;
+package kz.hackathon.secretsantaapp.model.game;
 
 public enum Status {
     EMERGENCY_SITUATIONS,

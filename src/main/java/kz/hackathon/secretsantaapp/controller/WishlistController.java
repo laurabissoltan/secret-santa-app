@@ -6,6 +6,7 @@ import jakarta.validation.ValidationException;
 import kz.hackathon.secretsantaapp.dto.wshlist.WishlistResponse;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.model.wishlist.Wishlist;
+import kz.hackathon.secretsantaapp.repository.UserRepository;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.GameUserService;
 import kz.hackathon.secretsantaapp.service.WishlistService;
@@ -33,6 +34,9 @@ public class WishlistController {
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Operation(summary = "создание списка подарков, по требованию ограничение максимум 10 подарков")
     @PostMapping("/{gameId}/create-wishlist")
     public ResponseEntity<?> createWishlist(@PathVariable UUID gameId, @RequestBody List<String> descriptions) {
@@ -48,14 +52,14 @@ public class WishlistController {
     @GetMapping("/{gameId}/my-giftee")
     public ResponseEntity<List<WishlistResponse>> getWishlist(@PathVariable UUID gameId) {
         User user = customUserDetailService.getCurrentUser();
-        UUID userId = user.getId();
+        UUID userId = user.getId(); //suppose my id
 
         List<Wishlist> wishlists = wishlistService.getWishlistByGameIdAndUserId(gameId, userId);
         List<WishlistResponse> wishlistResponses = new ArrayList<>();
         wishlists.forEach(wishlist -> {
             wishlistResponses.add(new WishlistResponse(
                     wishlist.getId(), wishlist.getGame().getId(),
-                    wishlist.getUser().getId(), wishlist.getUser().getEmail(), wishlist.getDescription()));
+                    wishlist.getUser().getId(), wishlist.getDescription(), wishlist.getUser().getEmail()));
         });
         return new ResponseEntity<>(wishlistResponses,HttpStatus.OK);
     }
