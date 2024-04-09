@@ -40,7 +40,7 @@ public class GameController {
 
 
     @PostMapping("/create-game")
-    @Operation(summary = "создание игры, уникальный идентификатор можно не возвращать, ни на что не будет влиять")
+    @Operation(summary = "создание игры")
     public ResponseEntity<?> createGame(@Valid @RequestBody CreateGameRequest request, BindingResult result) {
         User currentUser = customUserDetailService.getCurrentUser();
 
