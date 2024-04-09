@@ -54,8 +54,15 @@ public class InvitationController {
         Invitation invitation = invitationRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Приглашение не найдено."));
 
-        if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
+        /*if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
             return new ResponseEntity<>("Вы уже являетесь участником игры.", HttpStatus.CONFLICT);
+        }*/
+
+        if (gameUserService.isParticipant(invitation.getGame().getId(), userId)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Вы уже являетесь участником игры.");
+            response.put("gameId", invitation.getGame().getId());
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
         }
 
         gameUserService.createGameUser(invitation.getGame().getId(), new ArrayList<>(Arrays.asList(user.getEmail())));
