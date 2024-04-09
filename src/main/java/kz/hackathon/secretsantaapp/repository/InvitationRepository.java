@@ -1,5 +1,6 @@
 package kz.hackathon.secretsantaapp.repository;
 
+import jakarta.transaction.Transactional;
 import kz.hackathon.secretsantaapp.model.invitation.Invitation;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,9 +21,15 @@ public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
 
     Optional<Invitation> findByGameIdAndGroupInvitationTrue(UUID gameId);
 
+
     @Modifying
     @Query("DELETE FROM Wishlist w WHERE w.user.id = :userId")
     void deleteByUserId(@Param("userId") UUID userId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Invitation i WHERE i.game.id = :gameId")
+    void deleteByGameId(@Param("gameId") UUID gameId);
 
 
 }

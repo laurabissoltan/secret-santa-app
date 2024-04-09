@@ -1,12 +1,7 @@
 package kz.hackathon.secretsantaapp.dto.game;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import kz.hackathon.secretsantaapp.model.game.Game;
-import kz.hackathon.secretsantaapp.model.gameUser.Status;
+import kz.hackathon.secretsantaapp.model.game.Status;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
-import kz.hackathon.secretsantaapp.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

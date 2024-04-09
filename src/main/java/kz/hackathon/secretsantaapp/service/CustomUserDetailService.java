@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import kz.hackathon.secretsantaapp.model.game.Game;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
+import kz.hackathon.secretsantaapp.model.invitation.Invitation;
 import kz.hackathon.secretsantaapp.model.password.PasswordResetToken;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.model.wishlist.Wishlist;
@@ -110,13 +111,26 @@ public class CustomUserDetailService implements UserDetailsService{
     private GameRepository gameRepository;
 
 
+
     @Transactional
-    public void deleteUser(UUID userId) {
+    public void deleteUserAccount(UUID userId) {
+        // Unlink from GameUser entities
+        deleteUserInGameUser(userId);
+        // Unlink from Wishlist entities
+        deleteUserInTheWishList(userId);
+        // Unlink from Game entities
+        deleteUserAndUnlinkGames(userId);
+
+        // Finally, delete the user
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userRepository.delete(user);
+    }
+ /*   public void deleteUser(UUID userId) {
         deleteUserAndUnlinkGames(userId);
         deleteUserInTheWishList(userId);
         deleteUserInGameUser(userId);
-    }
-    @Transactional
+    }*/
+
     public void deleteUserInGameUser(UUID userId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -127,10 +141,10 @@ public class CustomUserDetailService implements UserDetailsService{
             gameUser.setUser(null);
             gameUserRepository.save(gameUser);
         }
-        userRepository.delete(user);
+      //  userRepository.delete(user);
     }
 
-    @Transactional
+
     public void deleteUserInTheWishList(UUID userId) {
         List<Wishlist> wishlists = wishlistRepository.findByUserId(userId);
         for (Wishlist wishlist : wishlists) {

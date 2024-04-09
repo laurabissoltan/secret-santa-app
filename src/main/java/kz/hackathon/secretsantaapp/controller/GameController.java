@@ -6,8 +6,8 @@ import jakarta.validation.Valid;
 import kz.hackathon.secretsantaapp.dto.game.CreateGameRequest;
 import kz.hackathon.secretsantaapp.dto.game.GameResponse;
 import kz.hackathon.secretsantaapp.model.game.Game;
+import kz.hackathon.secretsantaapp.model.game.Status;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
-import kz.hackathon.secretsantaapp.model.gameUser.Status;
 import kz.hackathon.secretsantaapp.model.user.Role;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.GameUserRepository;
@@ -40,7 +40,7 @@ public class GameController {
 
 
     @PostMapping("/create-game")
-    @Operation(summary = "создание игры, нам дополнительно нужно чтоб фронт создал и вернул идентификтор по требованиям (ex. 45LK245 )")
+    @Operation(summary = "создание игры, уникальный идентификатор можно не возвращать, ни на что не будет влиять")
     public ResponseEntity<?> createGame(@Valid @RequestBody CreateGameRequest request, BindingResult result) {
         User currentUser = customUserDetailService.getCurrentUser();
 
@@ -63,6 +63,7 @@ public class GameController {
         game.setMaxPrice(request.getMaxPrice());
         game.setUniqueIdentifier(request.getUniqueIdentifier());
         game.setCreator(currentUser);
+        game.setStatus(Status.IN_PROCESS);
 
         Game newGame = gameService.createGame(game, currentUser.getId());
 
@@ -75,8 +76,8 @@ public class GameController {
                 newGame.getMaxPrice(),
                 (int) gameUserService.getParticipantCountByGameId(newGame.getId()),
                 newGame.getCreator().getId(),
-                Role.ORGANISER
-           //     newGame.getStatus()
+                Role.ORGANISER,
+                newGame.getStatus()
         );
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -92,23 +93,43 @@ public class GameController {
         User currentUser = customUserDetailService.getCurrentUser();
 
         List<GameUser> userGames = gameUserRepository.findByUserId(currentUser.getId());
-
+        List<Game> organiserGames = gameService.getGamesByCreatorId(currentUser.getId());
 
         List<GameResponse> responses = new ArrayList<>();
         userGames.forEach(gameUser -> {
             Role userRole = (gameUser.getGame().getCreator().getId().equals(currentUser.getId())) ? Role.ORGANISER : Role.PARTICIPANT;
             int participantCount = (int) gameUserService.getParticipantCountByGameId(gameUser.getGame().getId());
-
-            // int participantCount = gameUserService.getParticipantCountByGameId(game.getId());
             responses.add(new GameResponse(
                     gameUser.getGame().getId(),
                     gameUser.getGame().getName(),
-                //    gameUser.getGame().getUniqueIdentifier(),
                     gameUser.getGame().getMaxPrice(),
                     participantCount,
                     gameUser.getGame().getCreator().getId(),
-                    userRole));
+                    userRole,
+                    gameUser.getGame().getStatus()));
         });
+
+        for (Game organiserGame : organiserGames) {
+            boolean found = false;
+            for (GameResponse response: responses) {
+                if (response.getId().equals(organiserGame.getId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                //adding back if not found
+                int participantCount = (int) gameUserService.getParticipantCountByGameId(organiserGame.getId());
+                responses.add(new GameResponse(
+                        organiserGame.getId(),
+                        organiserGame.getName(),
+                        organiserGame.getMaxPrice(),
+                        participantCount,
+                        currentUser.getId(),
+                        Role.ORGANISER,
+                        organiserGame.getStatus()));
+            }
+        }
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 

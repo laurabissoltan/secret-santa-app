@@ -2,19 +2,18 @@ package kz.hackathon.secretsantaapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import kz.hackathon.secretsantaapp.model.game.Game;
+import kz.hackathon.secretsantaapp.model.game.Status;
 import kz.hackathon.secretsantaapp.model.gameUser.GameUser;
 import kz.hackathon.secretsantaapp.model.invitation.InvitationStatus;
 import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.GameRepository;
 import kz.hackathon.secretsantaapp.repository.GameUserRepository;
+import kz.hackathon.secretsantaapp.repository.InvitationRepository;
 import kz.hackathon.secretsantaapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class GameUserService {
@@ -29,6 +28,9 @@ public class GameUserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private InvitationRepository invitationRepository;
 
     public void createGameUser(UUID gameId, List<String> emails) {
         Game game = gameRepository.findById(gameId)
@@ -94,6 +96,14 @@ public class GameUserService {
 
         List<GameUser> gameUsersPending = getGamesUserByGameIdAndInvitationStatus(gameId, InvitationStatus.PENDING);
         gameUserRepository.deleteAll(gameUsersPending);
+
+        gameRepository.findById(gameId).ifPresent(game -> {
+            game.setStatus(Status.MATCHING_COMPLETED);
+            gameRepository.save(game);
+        });
+
+        invitationRepository.deleteByGameId(gameId);
+
     }
 
     public boolean isParticipant(UUID gameId, UUID userId) {
@@ -130,6 +140,8 @@ public class GameUserService {
         String content = "Уважаемый организатор игры" + user.getEmail() + " хочет связаться с вами";
         emailService.sendEmail(game.getCreator().getEmail(), game.getName(), content);
     }
+
+
 
 
 
