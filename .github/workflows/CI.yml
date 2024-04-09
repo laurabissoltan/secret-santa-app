@@ -6,7 +6,7 @@ on:
       - "main"
 
 jobs:
-  Docker build:
+  Docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,7 +30,8 @@ jobs:
           push: true
           tags: isacoolvov/secret-santa-app:latest
 
-  deploy to server:
+  deploy:
+    needs: Docker
     runs-on: ubuntu-latest
 
     steps:
