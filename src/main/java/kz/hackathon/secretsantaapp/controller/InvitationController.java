@@ -38,8 +38,8 @@ public class InvitationController {
     private GameUserService gameUserService;
 
     @Operation(summary = "добавление вручную вариант 1: отправка ссылку на игру по почте")
-    @PostMapping("/send")
-    public ResponseEntity<?> sendInvitations(@RequestParam UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) throws MessagingException {
+    @PostMapping("/{gameId}/send")
+    public ResponseEntity<?> sendInvitations(@PathVariable("gameId") UUID gameId, @RequestBody List<InvitationRequest> invitationRequests ) throws MessagingException {
         List<String> emails = invitationRequests.stream().map(InvitationRequest::getEmail).collect(Collectors.toList());
         invitationService.sendInvitations(gameId, emails);
         return ResponseEntity.ok("Приглашения были отправлены по почте");
