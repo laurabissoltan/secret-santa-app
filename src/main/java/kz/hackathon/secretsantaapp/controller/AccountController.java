@@ -60,4 +60,20 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/user-info")
+    public ResponseEntity<?> contactInformation() {
+        try {
+            User currentUser = customUserDetailService.getCurrentUser();
+
+            UserInfoDto userInfo = new UserInfoDto();
+            userInfo.setUserId(currentUser.getId());
+            userInfo.setEmail(currentUser.getEmail());
+            userInfo.setLogin(currentUser.getLogin());
+
+            return ResponseEntity.ok().body(userInfo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }
