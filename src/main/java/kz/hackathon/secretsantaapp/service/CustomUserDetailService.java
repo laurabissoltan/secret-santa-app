@@ -111,58 +111,40 @@ public class CustomUserDetailService implements UserDetailsService{
     private GameRepository gameRepository;
 
 
-
     @Transactional
     public void deleteUserAccount(UUID userId) {
-        // Unlink from GameUser entities
-        deleteUserInGameUser(userId);
-        // Unlink from Wishlist entities
-        deleteUserInTheWishList(userId);
-        // Unlink from Game entities
+        // удалить все игры который этот пользователь организатор
         deleteUserAndUnlinkGames(userId);
 
         // Finally, delete the user
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         userRepository.delete(user);
     }
- /*   public void deleteUser(UUID userId) {
-        deleteUserAndUnlinkGames(userId);
-        deleteUserInTheWishList(userId);
-        deleteUserInGameUser(userId);
-    }*/
 
-    public void deleteUserInGameUser(UUID userId) {
+    public void deleteGameUserInGame(UUID gameId) {// удалить gameUser этого gameId
+        List<GameUser> gameUsers = gameUserRepository.findByGameId(gameId);
+        // по цикл удаляем всех wish list для этого gameUser
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        List<GameUser> gameUsers = gameUserRepository.findByUserId(userId);
-
-        for (GameUser gameUser : gameUsers) {
-            gameUser.setUser(null);
-            gameUserRepository.save(gameUser);
-        }
-      //  userRepository.delete(user);
-    }
-
-
-    public void deleteUserInTheWishList(UUID userId) {
-        List<Wishlist> wishlists = wishlistRepository.findByUserId(userId);
-        for (Wishlist wishlist : wishlists) {
-            wishlist.setUser(null);
-            wishlistRepository.save(wishlist);
-        }
-    }
-
-    public void deleteUserAndUnlinkGames(UUID userId) {
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        List<Game> games = gameRepository.findByCreatorId(userId);
-        games.forEach(game -> {
-            game.setCreator(null);
-            gameRepository.save(game);
+        gameUsers.forEach(gameUser -> {
+            deleteUserInTheWishList(gameUser.getUser().getId());
+            // удаляем сам  gameUser
+            gameUserRepository.delete(gameUser);
         });
     }
 
+    public void deleteUserInTheWishList(UUID userId) {
+        List<Wishlist> wishlists = wishlistRepository.findByUserId(userId);
+        wishlistRepository.deleteAll(wishlists);
+    }
 
+    public void deleteUserAndUnlinkGames(UUID userId) {
+        List<Game> games = gameRepository.findByCreatorId(userId);
+
+        games.forEach(game -> {
+            // если есть GameUsers для этого игры тогда удаляем их
+            deleteGameUserInGame(game.getId());
+            // удаляем game
+            gameRepository.delete(game);
+        });
+    }
 }
