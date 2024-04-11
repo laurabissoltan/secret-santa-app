@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -70,23 +71,25 @@ public class CustomUserDetailService implements UserDetailsService{
         return String.valueOf(user.getId()).equals(ownerId);
     }
 
-    public void createPasswordResetTokenForUser(final User user) {
 
+    public void createPasswordResetTokenForUser(final User user) {
         final String token = UUID.randomUUID().toString();
         final PasswordResetToken myToken = new PasswordResetToken();
         myToken.setUser(user);
         myToken.setToken(token);
-        myToken.setExpiryDate(LocalDateTime.now().plusHours(2));
+        myToken.setExpiryDate(LocalDateTime.now().plusHours(2)); // Set expiry date
+        myToken.setDeactivated(false); // Ensure the token is active
         passwordResetTokenRepository.save(myToken);
 
         sendResetTokenEmail(user.getEmail(), token);
     }
 
+
     private void sendResetTokenEmail(String email, String token) {
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(email);
         emailMessage.setSubject("Password Reset Request");
-        emailMessage.setText("To reset your password, click the link below:\n" + "http://localhost:8080/reset-password?token=" + token);
+        emailMessage.setText("To reset your password, click the link below:\n" + "http://localhost:8080/reset-password/" + token);
         mailSender.send(emailMessage);
     }
 
@@ -120,7 +123,10 @@ public class CustomUserDetailService implements UserDetailsService{
         // удалить все игры который этот пользователь организатор
         deleteUserAndUnlinkGames(userId);
 
+        passwordResetTokenRepository.deletePasswordResetTokenByUserId(userId);
 
+
+      //  passwordResetTokenRepository.deletePasswordResetTokenByUserId(userId);
         // Finally, delete the user
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
 

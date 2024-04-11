@@ -14,6 +14,7 @@ import kz.hackathon.secretsantaapp.model.user.User;
 import kz.hackathon.secretsantaapp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,10 +82,19 @@ public class AuthenticationService {
         user.setLastPasswordResetDate(LocalDateTime.now());
         userRepository.save(user);
 
-        resetToken.setDeactivated(true);
-        passwordResetTokenRepository.save(resetToken);
+        List<PasswordResetToken> tokens = passwordResetTokenRepository.findAllByUserId(user.getId());
+        tokens.forEach(t -> t.setDeactivated(true));
+        passwordResetTokenRepository.saveAll(tokens);
+    //    passwordResetTokenRepository.deletePasswordResetTokenByUserId(user.getId());
+      //  passwordResetTokenRepository.save(resetToken);
     }
 
+    @Scheduled(fixedDelay = 86400000)
+    public void cleanupExpiredTokens() {
+        LocalDateTime now = LocalDateTime.now();
+        List<PasswordResetToken> expiredTokens = passwordResetTokenRepository.findAllByExpiryDateBefore(now);
+        passwordResetTokenRepository.deleteAll(expiredTokens);
+    }
     public void updateLoginEmail(UpdateLoginEmailRequest request) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = customUserDetailService.getByUsername(currentUsername);

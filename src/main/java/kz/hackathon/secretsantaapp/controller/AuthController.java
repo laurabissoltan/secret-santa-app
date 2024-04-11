@@ -14,6 +14,8 @@ import kz.hackathon.secretsantaapp.service.AuthenticationService;
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import kz.hackathon.secretsantaapp.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody @Valid RegisterRequest request) {
@@ -63,10 +67,12 @@ public class AuthController {
         User user = userService.getByUsername(userEmail);
         if(user != null) {
             userService.createPasswordResetTokenForUser(user);
-         //   return ResponseEntity.notFound().body("Пользователь с таким email не найден в системе.");
+            logger.info("Временный токен для пользователя был создан: {}", userEmail);
+        } else {
+            logger.info("Аккаунт не существует в системе: {}", userEmail);
         }
 
-        return ResponseEntity.ok("Если ваш email зарегистрирован в нашей системе, на него будет отправлена ссылка для восстановления аккаунта.");
+        return ResponseEntity.ok("Ссылка на восстанавления пароля был отправлен на почту");
     }
 
     @Operation(summary = "восстановаление пароля, принимает три значения, временный одноразовый токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")

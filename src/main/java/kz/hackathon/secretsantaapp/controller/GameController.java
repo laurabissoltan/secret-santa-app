@@ -137,6 +137,10 @@ public class GameController {
     @PostMapping("/{gameId}/reshuffle")
     public ResponseEntity<?> reshuffleParticipants(@PathVariable UUID gameId) {
         try {
+            User currentUser = customUserDetailService.getCurrentUser();
+            if(currentUser.getRole() != Role.ORGANISER) {
+                return ResponseEntity.badRequest().body("Разрешено только организаторам");
+            }
             gameUserService.reshuffle(gameId);
             return ResponseEntity.ok("Жеребьевка завершена");
         } catch (Exception e) {
