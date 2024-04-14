@@ -2,6 +2,7 @@ package kz.hackathon.secretsantaapp.config;
 
 import kz.hackathon.secretsantaapp.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,12 +24,15 @@ import java.util.List;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+//@EnableWebSecurity
+//@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+  //  @Autowired
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  //  @Autowired
     private final CustomUserDetailService customUserDetailService;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,7 +49,7 @@ public class SecurityConfiguration {
                         .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests(request -> request
                     //    .requestMatchers("/auth/forgot-password").permitAll()
-                        .requestMatchers("/auth/**", "/auth/forgot-password").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**", "/h2-console/**").permitAll()
                        // .requestMatchers("/accounts/**").hasAuthority(Role.ROLE_ORGANISER.name())
                         .anyRequest().authenticated())

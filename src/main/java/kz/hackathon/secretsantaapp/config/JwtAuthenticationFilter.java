@@ -33,7 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isNotEmpty(authHeader) && authHeader.startsWith(BEARER_PREFIX)) {
+        boolean skipFilter = request.getRequestURI().contains("/forgot-password");
+
+        if (!skipFilter && StringUtils.isNotEmpty(authHeader) && authHeader.startsWith(BEARER_PREFIX)) {
             String jwt = authHeader.substring(BEARER_PREFIX.length());
             try {
                 if (jwtService.validateTokenType(jwt, "ACCESS")) { // New method to validate token type

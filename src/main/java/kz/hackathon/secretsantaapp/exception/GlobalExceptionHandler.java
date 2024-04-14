@@ -1,6 +1,7 @@
 package kz.hackathon.secretsantaapp.exception;
 
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,8 +25,13 @@ public class GlobalExceptionHandler {
                 .body(errors);
     }
 
-    @ExceptionHandler(value = {AuthenticationException.class})
+/*    @ExceptionHandler(value = {AuthenticationException.class})
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception) {
         return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }*/
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь не найден.");
     }
 }

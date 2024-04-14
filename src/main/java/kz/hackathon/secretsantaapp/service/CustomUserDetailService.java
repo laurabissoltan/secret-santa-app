@@ -77,8 +77,8 @@ public class CustomUserDetailService implements UserDetailsService{
         final PasswordResetToken myToken = new PasswordResetToken();
         myToken.setUser(user);
         myToken.setToken(token);
-        myToken.setExpiryDate(LocalDateTime.now().plusHours(2)); // Set expiry date
-        myToken.setDeactivated(false); // Ensure the token is active
+        myToken.setExpiryDate(LocalDateTime.now().plusHours(2));
+        myToken.setDeactivated(false);
         passwordResetTokenRepository.save(myToken);
 
         sendResetTokenEmail(user.getEmail(), token);

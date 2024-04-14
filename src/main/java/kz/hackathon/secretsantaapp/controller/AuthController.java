@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -68,11 +69,13 @@ public class AuthController {
         if(user != null) {
             userService.createPasswordResetTokenForUser(user);
             logger.info("Временный токен для пользователя был создан: {}", userEmail);
+            return ResponseEntity.ok("Ссылка на восстановление пароля была отправлена на почту.");
         } else {
             logger.info("Аккаунт не существует в системе: {}", userEmail);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь не найден.");
         }
 
-        return ResponseEntity.ok("Ссылка на восстанавления пароля был отправлен на почту");
+     //   return ResponseEntity.ok("Ссылка на восстанавления пароля был отправлен на почту");
     }
 
     @Operation(summary = "восстановаление пароля, принимает три значения, временный одноразовый токен (это не access и не рефреш) берется со ссылки который был отправлен по почте")
