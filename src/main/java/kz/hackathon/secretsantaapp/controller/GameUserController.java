@@ -56,7 +56,7 @@ public class GameUserController {
     }
 
     @Operation(summary = "список участников после жеребьевки")
-    @PostMapping("/{gameId}/list-after-shuffle")
+    @GetMapping("/{gameId}/list-after-shuffle")
     public ResponseEntity<?> listGameUsers(@PathVariable UUID gameId) {
         List<GameUser> gameUsers = gameUserService.getGamesUserByGameId(gameId);
         List<GameUserResponse> responses = new ArrayList<>();
@@ -70,7 +70,7 @@ public class GameUserController {
     }
 
     @Operation(summary = "список участников до жеребьевки")
-    @PostMapping("/{gameId}/list-before-shuffle")
+    @GetMapping("/{gameId}/list-before-shuffle")
     public ResponseEntity<?> listAllGameUsers(@PathVariable UUID gameId) {
         List<GameUser> gameUsers = gameUserService.getGamesUserByGameId(gameId);
         List<BeforeGameUser> responses = new ArrayList<>();
