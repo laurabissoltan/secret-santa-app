@@ -59,11 +59,21 @@ public class GameUserController {
     @GetMapping("/{gameId}/list-after-shuffle")
     public ResponseEntity<?> listGameUsers(@PathVariable UUID gameId) {
         List<GameUser> gameUsers = gameUserService.getGamesUserByGameId(gameId);
+
+        if (gameUsers == null || gameUsers.isEmpty()) {
+            return new ResponseEntity<>("No user found in the game id", HttpStatus.NOT_FOUND);
+        }
+
+        GameUser firstGameUser = gameUsers.get(0);
+        if (!"IN_PROCESS".equals(firstGameUser.getGame().getStatus())) {
+            return new ResponseEntity<>("Жеребьевка еще не проведена", HttpStatus.BAD_REQUEST);
+        }
+
         List<GameUserResponse> responses = new ArrayList<>();
         gameUsers.forEach(gameUser -> {
             responses.add(new GameUserResponse(
                     gameUser.getId(), gameUser.getGame().getName(), gameUser.getUser().getEmail(), gameUser.getGiftee().getEmail(),
-                    gameUser.getStatus(), gameUser.getFeedback(), gameUser.getInvitationStatus(), gameUser.getUserName(),
+                    gameUser.getGame().getStatus(), gameUser.getFeedback(), gameUser.getInvitationStatus(), gameUser.getUserName(),
                     gameUser.getEmail(), gameUser.getPhoneNumber()));
         });
         return new ResponseEntity<>(responses,HttpStatus.OK);
@@ -77,7 +87,7 @@ public class GameUserController {
         gameUsers.forEach(gameUser -> {
             responses.add(new BeforeGameUser(
                     gameUser.getId(), gameUser.getGame().getName(), gameUser.getUser().getEmail(),
-                    gameUser.getStatus(), gameUser.getFeedback(), gameUser.getInvitationStatus(), gameUser.getUserName(),
+                    gameUser.getGame().getStatus(), gameUser.getFeedback(), gameUser.getInvitationStatus(), gameUser.getUserName(),
                     gameUser.getEmail(), gameUser.getPhoneNumber()));
         });
         return new ResponseEntity<>(responses,HttpStatus.OK);
