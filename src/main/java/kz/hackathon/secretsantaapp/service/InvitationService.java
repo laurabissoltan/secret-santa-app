@@ -65,7 +65,8 @@ public class InvitationService {
             invitationCode = invitation.getInvitationCode();
         }
         https://secret-santa-app.azurewebsites.net/
-        return "http://51.107.14.25:3000/invitations/accept/" + invitationCode;
+     //   return "http://51.107.14.25:3000/invitations/accept/" + invitationCode;
+        return "http://158.160.21.73:3000/invitations/accept/" + invitationCode;
     }
 
     public String generateShareableLinkIOS(UUID gameId) {
